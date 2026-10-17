@@ -1,78 +1,113 @@
-# Personal Finance & Subscription Tracker
+# Personal Finance & Subscription Tracker (Dorado)
 
 ## 1. Opis projektu
 
-Dorado to aplikacja internetowa do zarządzania dochodami, wydatkami oraz subskrypcjami, działająca po stronie klienta (Client-Side Only). Aplikacja łączy funkcje menedżera finansowego z modułem kontroli płatności cyklicznych (serwisy, subskrypcje, opłaty stałe).
+Dorado to kompleksowa aplikacja internetowa do zarządzania osobistymi finansami (przychodami stałymi i dodatkowymi/premiami, wydatkami codziennymi oraz opłatami cyklicznymi/subskrypcjami), działająca w pełni po stronie klienta (Client-Side Only).
+
+Aplikacja łączy zaawansowane funkcje budżetowe z inteligentnym systemem powiadomień i powiadomień o stanie konta. Pozwala użytkownikowi elastycznie definiować okresy rozliczeniowe, automatycznie przeliczać nadwyżki, kontrolować limity oraz analizować bieżący stan majątkowy w sposób w pełni bezpieczny i prywatny.
 
 Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 
+---
+
 ## 2. Cel i założenia projektu
 
-- **Główny cel:** Stworzenie narzędzia do kontroli osobistych finansów bez użycia zewnętrznych serwerów czy złożonych arkuszy kalkulacyjnych.
-- **Założenia techniczne:** Stworzenie responsywnego interfejsu użytkownika (UI/UX) z wykorzystaniem technologii front-endowych. Wszystkie dane są przechowywane i przetwarzane lokalnie w przeglądarce.
+- **Główny cel:** Stworzenie profesjonalnego, responsywnego narzędzia do pełnej kontroli budżetu osobistego z systemem powiadomień w czasie rzeczywistym i alertów ostrzegawczych.
+- **Założenia techniczne i architektoniczne:**
+  - Nowoczesny interfejs użytkownika (UI/UX) z obsługą motywów (Dark/Light Mode) oraz centrum powiadomień (Toasty / Alert Center).
+  - Architektura oparta wyłącznie na Front-endzie z lokalną trwałością danych (`localStorage`) i pełną prywatnością użytkownika.
+  - Rygorystyczna walidacja danych, obsługa przypadków brzegowych (Edge Cases) oraz mechanizmy bezpieczeństwa operacji.
+
+---
 
 ## 3. Funkcjonalności
 
-### 3.1. Śledzenie przychodów i wydatków
+### 3.1. Cykl budżetowy, przychody i premie
 
-- **Ewidencja dochodów:** Rejestrowanie comiesięcznego wynagrodzenia oraz dodatkowych źródeł przychodu.
-- **Kategoryzacja wydatków:** Dodawanie transakcji z przypisaniem do kategorii (Jedzenie, Odzież, Rozrywka, Subskrypcje, Transport, Rachunki).
-- **Cykliczny okres budżetowy:** Przeliczanie bilansu na nowy miesiąc (rozpoczynający się pierwszego dnia miesiąca).
-- **Historia transakcji:** Lista operacji z możliwością filtrowania, wyszukiwania i edycji.
+- **Elastyczny okres rozliczeniowy (Custom Billing Cycle):**
+  - Domyślnie budżet liczony jest od 1. dnia miesiąca (lub wybranego dnia startu cyklu, np. 15. dnia).
+  - **Obsługa nadwyżek (Rollover & Carryover):** Automatyczne obliczanie "nadwyżki lub niedoboru" z poprzedniego okresu i doliczanie jej do bilansu otwarcia nowego cyklu.
+- **Ewidencja przychodów (Stałe vs. Dodatkowe/Premie):**
+  - **Wynagrodzenie stałe (Cykliczne):** Podstawowa pensja przypisana do harmonogramu cyklu.
+  - **Premie i dochody nieregularne:** Szybkie dodawanie jednorazowych zastrzyków gotówki z innych źródeł (freelance, premie) z możliwością wyboru daty wpływu.
 
-### 3.2. Menedżer subskrypcji
+### 3.2. Wydatki, kastomizacja i historia transakcji
 
-- **Śledzenie opłat cyklicznych:** Ewidencja planów subskrypcyjnych z uwzględnieniem kwoty i częstotliwości rozliczeń.
-- **Kalendarz płatności:** Wizualizacja nadchodzących opłat.
-- **Analiza użytkowania:** Ocena częstotliwości korzystania z usług oraz identyfikacja nieużywanych subskrypcji.
-- **Asystent rezygnacji:** Instrukcje i odnośniki ułatwiające anulowanie subskrypcji.
+- **Kategorie domyślne i własne (Custom Categories):** Wbudowane kategorie oraz kreator własnych kategorii wydatków i przychodów z ikonami i kolorami.
+- **Historia transakcji:** Tabela operacji z zaawansowanym filtrowaniem, wyszukiwaniem i edycją.
 
-### 3.3. Analityka i wizualizacja
+### 3.3. Menedżer subskrypcji i opłat stałych
 
-- **Pulpit główny (Dashboard):** Wykresy przedstawiające stosunek przychodów do wydatków w wybranym okresie.
-- **Struktura wydatków:** Wykresy kołowe i słupkowe pokazujące podział środków według kategorii.
-- **Prognoza salda:** Szacowanie dostępnych środków do końca miesiąca na podstawie stałych opłat i średnich wydatków.
+- **Ewidencja płatności cyklicznych:** Rejestracja usług (Netflix, Spotify, czynsz) z automatycznym generowaniem wydatków w bilansie oraz kalendarzem płatności.
 
-## 4. Stos technologiczny
+### 3.4. System powiadomień i inteligentnych alertów (Notification Center)
 
-Projekt jest realizowany wyłącznie na Front-endzie.
+- **Powiadomienia o operacjach (Transaction Toasts):** Natychmiastowe komunikaty potwierdzające pomyślne dodanie, edycję lub usunięcie przychodu lub wydatku.
+- **Inteligentny alert niskiego salda (Low-Balance Smart Alert):**
+  - System stale monitoruje stan środków od początku bieżącego cyklu rozliczeniowego.
+  - **Własny próg ostrzegawczy:** Użytkownik może w ustawieniach w każdej chwili zmienić kwotę krytycznego progu. Jeśli w momencie zatwierdzenia zmiany saldo jest już niższe niż nowy próg, aplikacja **natychmiast w tej samej sekundzie** wyśle powiadomienie ostrzegawcze (np. _„Wydałeś już 6 500 zł. Na Twoim koncie pozostało tylko 750 zł”_).
+  - **Logika "Trigger Once":** Standardowy alert wysyła się jednorazowo w danym cyklu, aby nie spamować użytkownika. Flaga powiadomienia resetuje się automatycznie wraz z rozpoczęciem nowego okresu lub po zaksięgowaniu nowego przychodu/premii.
 
-| Kategoria                       | Technologia                  | Uzasadnienie wyboru                                                              |
-| ------------------------------- | ---------------------------- | -------------------------------------------------------------------------------- |
-| **Narzędzie budowania & Rdzeń** | **React + Vite**             | Szybkie budowanie projektu i obsługa HMR.                                        |
-| **Język programowania**         | **TypeScript**               | Ścisłe typowanie danych finansowych (`Transaction`, `Subscription`, `Category`). |
-| **Stylizowanie**                | **Tailwind CSS**             | Szybkie tworzenie układu stron i spójny, responsywny wygląd.                     |
-| **Komponenty UI**               | **Shadcn UI + Lucide Icons** | Gotowe komponenty interfejsu i ikony.                                            |
-| **Zarządzanie stanem**          | **Zustand**                  | Lekki magazyn stanu z łatwą integracją z LocalStorage.                           |
-| **Wykresy**                     | **Recharts**                 | Biblioteka do tworzenia wykresów dla Reacta.                                     |
-| **Lokalna baza danych**         | **LocalStorage + Mock Data** | Zapis danych w przeglądarce oraz zestaw danych testowych (Mock JSON).            |
-| **Routing**                     | **React Router DOM v6**      | Nawigacja pomiędzy widokami aplikacji.                                           |
+### 3.5. Analityka, bilans i prognozowanie
 
-## 5. Architektura danych (Client-Only Flow)
+- **Pulpit główny (Dashboard):** Podsumowanie finansowe, wykresy analityczne (Recharts) oraz dynamiczny wskaźnik **Safe-to-Spend**.
 
-1. **Initial Seed (Tryb demo):** Przy pierwszym uruchomieniu aplikacja ładuje zestaw danych testowych.
-2. **Lokalna trwałość:** Transakcje, subskrypcje i dane o wynagrodzeniu są zapisywane w `localStorage` za pośrednictwem Zustand.
-3. **Eksport/Import JSON:** Funkcja eksportu danych do pliku `.json` i ich ponownego importu.
+---
 
-## 6. Skład zespołu i podział ról
+## 4. Kwestie Techniczne, Walidacja i Logika UX
 
-- **[Imię i Nazwisko 1]** — Team Lead / React Architect (Zarządzanie stanem, synchronizacja z LocalStorage, Router)
-- **[Imię i Nazwisko 2]** — UI/UX Lead (Tailwind CSS, Layout, komponenty UI)
-- **[Imię i Nazwisko 3]** — Module Lead: Subscription Manager (Logika powiadomień, analiza użytkowania)
-- **[Imię i Nazwisko 4]** — Module Lead: Analytics & Charts (Integracja Recharts, raporty, obliczanie okresu budżetowego)
+### 4.1. Walidacja danych (Data Validation)
 
-## 7. Plan realizacji
+- Walidacja typów i kwot (Zod), blokada wartości ujemnych, zaokrąglanie do 2 miejsc po przecinku, poprawność dat oraz unikalność kastomowych kategorii.
 
-1. **Etap 1: Inicjalizacja i makieta podstawowa**
-   - Konfiguracja Vite + React + TypeScript + Tailwind CSS.
-   - Stworzenie paska bocznego (sidebar), nawigacji i układu stron.
-2. **Etap 2: Moduł przychodów i wydatków**
-   - Formularze dodawania transakcji i wprowadzania pensji.
-   - Konfiguracja Zustand i zapisu w `localStorage`.
-3. **Etap 3: Moduł subskrypcji**
-   - Karta subskrypcji, kalendarz płatności i wskaźniki użytkowania.
-4. **Etap 4: Wizualizacja i analityka**
-   - Podłączenie wykresów Recharts do analizy wydatków i budżetu.
-5. **Etap 5: Wdrożenie i testy**
-   - Wypełnienie danymi testowymi na potrzeby prezentacji.
-   - Wdrożenie aplikacji na GitHub Pages lub Vercel.
+### 4.2. Bezpieczeństwo Operacji i User Safeguards
+
+- Modale potwierdzenia, mechanizm cofania akcji (_Undo_ dla powiadomień Toast) oraz 100% prywatności danych w `localStorage`.
+
+### 4.3. Przypadki Brzegowe (Edge Cases)
+
+1. **Zmiana dnia cyklu w trakcie miesiąca:** Przeliczanie okresu przejściowego bez utraty spójności powiadomień i historii.
+2. **Subskrypcje w dniach nieistniejących (np. 31. lutego):** Automatyczne korygowanie daty płatności na ostatni dzień miesiąca.
+3. **Puste stany (Empty States) i zarządzanie stanem powiadomień:** Obsługa flagi jednorazowego wyświetlenia alertu niskiego salda (`lowBalanceAlertTriggered: boolean`) w pamięci lokalnej, co zapobiega ponownemu wysyłaniu tego samego ostrzeżenia po odświeżeniu strony.
+
+---
+
+## 5. Stos technologiczny
+
+| Kategoria                       | Technologia                  | Uzasadnienie wyboru                                                    |
+| ------------------------------- | ---------------------------- | ---------------------------------------------------------------------- |
+| **Narzędzie budowania & Rdzeń** | **React + Vite**             | Szybkie budowanie, wydajność oraz świetne wsparcie HMR.                |
+| **Język programowania**         | **TypeScript**               | Ścisłe typowanie modeli danych finansowych i powiadomień.              |
+| **Stylizowanie i Motywy**       | **Tailwind CSS**             | Szybkie tworzenie responsywnego interfejsu (RWD) oraz Light/Dark Mode. |
+| **Komponenty UI & Ikony**       | **Shadcn UI + Lucide Icons** | Dostępne komponenty interfejsu, modale i system powiadomień Toast.     |
+| **Zarządzanie stanem**          | **Zustand (+ Persist)**      | Lekki magazyn stanu z synchronizacją z `localStorage`.                 |
+| **Walidacja formularzy**        | **Zod + React Hook Form**    | Bezpieczna walidacja schematów danych.                                 |
+| **Wykresy i Daty**              | **Recharts / date-fns**      | Wykresy analityczne oraz obsługa cykli budżetowych.                    |
+| **Testowanie logiki**           | **Vitest**                   | Testy jednostkowe dla logiki budżetowej i warunków powiadomień.        |
+
+---
+
+## 6. Architektura danych i Persystencja
+
+1. **Initial Seed (Tryb demo):** Automatyczne ładowanie danych demonstracyjnych przy pierwszym uruchomieniu.
+2. **Persystencja lokalna:** Zapis stanów transakcji, subskrypcji oraz flag powiadomień w `localStorage`.
+3. **Kopia zapasowa (Backup):** Eksport i import bazy danych do pliku JSON.
+
+---
+
+## 7. Skład zespołu i podział ról
+
+- **Denys Kononchuk 58843** — Team Lead / React Architect (Zarządzanie stanem Zustand, logika cykli budżetowych, algorytmy powiadomień i flagi niskiego salda, testy Vitest)
+- **Illia Isaiev 58835** — UI/UX Lead (Tailwind CSS, obsługa Shadcn UI, system Toast / Notification Center, Light/Dark Mode, RWD)
+- **Mykola Safiiuk 56103** — Module Lead: Subscription & Transactions Manager (Formularze walidowane Zod, obsługa kastomowych kategorii i historii transakcji)
+- **Roman Melnyk 56175** — Module Lead: Analytics & Charts (Integracja Recharts, dashboard, wskaźnik Safe-to-Spend, eksport JSON)
+
+---
+
+## 8. Plan realizacji
+
+1. **Etap 1: Inicjalizacja, motywy i makieta bazowa** (Vite, TS, Tailwind, Shadcn, Sidebar).
+2. **Etap 2: Moduł przychodów (stałe + premie), wydatków i powiadomień Toast** (Formularze Zod, powiadomienia o operacjach).
+3. **Etap 3: Logika cyklu budżetowego, subskrypcji i alertu niskiego salda** (Obsługa rollover, jednorazowy alert o niskim stanie konta oraz natychmiastowe powiadomienie przy zmianie progu).
+4. **Etap 4: Wizualizacja, analityka i kastomizacja** (Recharts, Safe-to-Spend, własne kategorie).
+5. **Etap 5: Testy jednostkowe, edge-cases i wdrożenie** (Testy Vitest dla logiki powiadomień i cykli, deploy na Vercel).
