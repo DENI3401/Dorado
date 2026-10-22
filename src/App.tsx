@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
 import AppLayout from "./components/AppLayout";
 import Placeholder from "./pages/Placeholder";
 
@@ -14,6 +15,7 @@ export default function App() {
           <Route path="/settings" element={<Placeholder title="Ustawienia" />} />
         </Route>
       </Routes>
+      <Toaster />
     </BrowserRouter>
   );
 }
