@@ -1,0 +1,12 @@
+// Publiczne API modułu transakcji — importuj stąd: import { ... } from "@/features/transactions";
+export * from "./types";
+export * from "./schema";
+export * from "./filters";
+export * from "./messages";
+export * from "./actions";
+export { useTransactionsStore } from "./store";
+export { useTransactionForm, type TransactionSavedEvent } from "./hooks/useTransactionForm";
+export { useTransactionFilters } from "./hooks/useTransactionFilters";
+export { useTransactionActions, type RemovedTransaction } from "./hooks/useTransactionActions";
+export { formatPLN, parseAmount, roundMoney, MAX_AMOUNT } from "./utils/money";
+export { todayIso, isValidIsoDate } from "./utils/isoDate";
