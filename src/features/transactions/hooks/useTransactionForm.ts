@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAllCategories } from "@/features/categories/hooks/useAllCategories";
 import {
@@ -59,7 +59,7 @@ export function useTransactionForm({ transaction, defaultType = "expense", onSav
     defaultValues: transaction ? fromTransaction(transaction) : emptyDefaults(defaultType),
   });
 
-  const type = form.watch("type");
+  const type = useWatch({ control: form.control, name: "type" });
 
   const categoriesForType = useMemo(
     () => categories.filter((c) => c.type === type),
