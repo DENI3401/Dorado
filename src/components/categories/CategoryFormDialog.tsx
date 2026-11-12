@@ -22,7 +22,7 @@ import {
 import { TRANSACTION_TYPE_LABELS } from "@/features/transactions";
 import { cn } from "@/lib/utils";
 import { CategoryBadge } from "./CategoryBadge";
-import { getCategoryIcon } from "./categoryIcons";
+import { CategoryIcon } from "./CategoryIcon";
 
 interface CategoryFormDialogProps {
   open: boolean;
@@ -121,7 +121,6 @@ function CategoryFormBody({ category, onClose }: { category?: Category; onClose:
                 className="grid grid-cols-6 gap-1.5 sm:grid-cols-8"
               >
                 {CATEGORY_ICONS.map((iconName) => {
-                  const Icon = getCategoryIcon(iconName);
                   const active = field.value === iconName;
                   return (
                     <button
@@ -138,7 +137,11 @@ function CategoryFormBody({ category, onClose }: { category?: Category; onClose:
                       )}
                       style={active ? { borderColor: color, backgroundColor: `${color}26` } : undefined}
                     >
-                      <Icon className="size-4.5" style={active ? { color } : undefined} />
+                      <CategoryIcon
+                        name={iconName}
+                        className="size-4.5"
+                        style={active ? { color } : undefined}
+                      />
                     </button>
                   );
                 })}
