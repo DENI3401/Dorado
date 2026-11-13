@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSyncSubscriptionPayments } from "@/hooks/useSyncSubscriptionPayments";
 import { useTheme } from "@/hooks/useTheme";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +51,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
 export default function AppLayout() {
   const { dark, toggle } = useTheme();
+  useSyncSubscriptionPayments();
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Esc zamyka menu na telefonie.
