@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 /** Wspólny styl pól tekstowych, dat i selectów (zgodny z tokenami shadcn). */
 export const inputClass =
-  "h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none transition placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30";
+  "h-9 pointer-coarse:h-11 w-full rounded-lg border border-input bg-background px-3 text-sm pointer-coarse:text-base outline-none transition placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30";
 
 interface FieldProps {
   label: string;
