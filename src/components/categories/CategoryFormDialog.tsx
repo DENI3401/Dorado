@@ -118,7 +118,7 @@ function CategoryFormBody({ category, onClose }: { category?: Category; onClose:
               <div
                 role="radiogroup"
                 aria-labelledby={`${id}-icon`}
-                className="grid grid-cols-6 gap-1.5 sm:grid-cols-8"
+                className="grid grid-cols-[repeat(auto-fill,minmax(2.5rem,1fr))] gap-1.5"
               >
                 {CATEGORY_ICONS.map((iconName) => {
                   const active = field.value === iconName;
@@ -132,7 +132,7 @@ function CategoryFormBody({ category, onClose }: { category?: Category; onClose:
                       title={iconName}
                       onClick={() => field.onChange(iconName)}
                       className={cn(
-                        "flex size-9 items-center justify-center rounded-lg border text-muted-foreground transition outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50",
+                        "flex h-10 w-full items-center justify-center rounded-lg border text-muted-foreground transition outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50",
                         active && "text-foreground",
                       )}
                       style={active ? { borderColor: color, backgroundColor: `${color}26` } : undefined}
@@ -169,7 +169,7 @@ function CategoryFormBody({ category, onClose }: { category?: Category; onClose:
                     aria-label={hex}
                     onClick={() => field.onChange(hex)}
                     className={cn(
-                      "size-7 rounded-full outline-none transition focus-visible:ring-3 focus-visible:ring-ring/50",
+                      "size-7 pointer-coarse:size-9 rounded-full outline-none transition focus-visible:ring-3 focus-visible:ring-ring/50",
                       field.value === hex && "ring-2 ring-foreground ring-offset-2 ring-offset-popover",
                     )}
                     style={{ backgroundColor: hex }}
@@ -177,7 +177,7 @@ function CategoryFormBody({ category, onClose }: { category?: Category; onClose:
                 ))}
                 <label
                   className={cn(
-                    "relative inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full border px-2.5 text-xs text-muted-foreground transition focus-within:ring-3 focus-within:ring-ring/50 hover:bg-muted",
+                    "relative inline-flex h-7 pointer-coarse:h-9 cursor-pointer items-center gap-1.5 rounded-full border px-2.5 text-xs text-muted-foreground transition focus-within:ring-3 focus-within:ring-ring/50 hover:bg-muted",
                     isCustomColor && "border-foreground text-foreground",
                   )}
                 >

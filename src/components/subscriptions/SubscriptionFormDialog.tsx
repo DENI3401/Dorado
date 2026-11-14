@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { Field, inputClass } from "@/components/ui/field";
 import { Segmented } from "@/components/ui/segmented";
-import { CategoryIcon } from "@/components/categories/CategoryIcon";
 import {
   BILLING_PERIOD_LABELS,
   savedSubscriptionMessage,
@@ -54,7 +53,7 @@ interface BodyProps {
 }
 
 function SubscriptionFormBody({ subscription, onClose }: BodyProps) {
-  const { form, submit, categories, isEditing } = useSubscriptionForm({
+  const { form, submit, isEditing } = useSubscriptionForm({
     subscription,
     onSaved: (event) => {
       toast.success(savedSubscriptionMessage(event));
@@ -128,49 +127,6 @@ function SubscriptionFormBody({ subscription, onClose }: BodyProps) {
           />
         </Field>
 
-        <Field label="Kategoria" labelId={`${id}-category`} error={errors.categoryId?.message}>
-          <Controller
-            control={control}
-            name="categoryId"
-            render={({ field }) => (
-              <div
-                role="radiogroup"
-                aria-labelledby={`${id}-category`}
-                className="flex flex-wrap gap-1.5"
-              >
-                {categories.map((category) => {
-                  const active = field.value === category.id;
-                  return (
-                    <button
-                      key={category.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={active}
-                      onClick={() => field.onChange(category.id)}
-                      className={cn(
-                        "inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-sm transition outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-                        active ? "font-medium" : "text-muted-foreground hover:bg-muted",
-                      )}
-                      style={
-                        active
-                          ? { borderColor: category.color, backgroundColor: `${category.color}1f` }
-                          : undefined
-                      }
-                    >
-                      <CategoryIcon
-                        name={category.icon}
-                        className="size-3.5"
-                        style={{ color: category.color }}
-                      />
-                      {category.name}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          />
-        </Field>
-
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field
             label="Pierwsza płatność"
@@ -208,7 +164,7 @@ function SubscriptionFormBody({ subscription, onClose }: BodyProps) {
             rows={2}
             maxLength={200}
             aria-invalid={errors.note ? true : undefined}
-            className={cn(inputClass, "h-auto min-h-16 resize-none py-2")}
+            className={cn(inputClass, "h-auto pointer-coarse:h-auto min-h-16 resize-none py-2")}
             {...register("note")}
           />
         </Field>
