@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSyncSubscriptionPayments } from "@/hooks/useSyncSubscriptionPayments";
 import { useTheme } from "@/hooks/useTheme";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +51,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
 export default function AppLayout() {
   const { dark, toggle } = useTheme();
+  useSyncSubscriptionPayments();
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Esc zamyka menu na telefonie.
@@ -63,44 +65,50 @@ export default function AppLayout() {
   }, [menuOpen]);
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="hidden w-64 shrink-0 border-r bg-card p-4 md:block">
+    <div className="flex min-h-dvh bg-background text-foreground">
+      <aside className="hidden w-64 shrink-0 overflow-y-auto border-r bg-card p-4 lg:sticky lg:top-0 lg:block lg:h-dvh lg:self-start">
         <h1 className="mb-6 text-xl font-bold">Dorado</h1>
         <NavLinks />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b bg-card px-4 py-3 md:justify-end">
-          <div className="flex items-center gap-2 md:hidden">
+        {/* Na telefonie i tablecie nagłówek z menu przykleja się do góry, żeby menu było zawsze pod ręką. */}
+        <div className="sticky top-0 z-40 lg:static">
+          <header className="flex items-center justify-between border-b bg-card px-4 py-3 lg:justify-end">
+            <div className="flex items-center gap-2 lg:hidden">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => setMenuOpen((open) => !open)}
+                aria-label={menuOpen ? "Zamknij menu" : "Otwórz menu"}
+                aria-expanded={menuOpen}
+                aria-controls="mobile-nav"
+              >
+                {menuOpen ? <X /> : <Menu />}
+              </Button>
+              <span className="text-lg font-bold">Dorado</span>
+            </div>
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => setMenuOpen((open) => !open)}
-              aria-label={menuOpen ? "Zamknij menu" : "Otwórz menu"}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-nav"
+              onClick={toggle}
+              aria-label={dark ? "Przełącz na jasny motyw" : "Przełącz na ciemny motyw"}
             >
-              {menuOpen ? <X /> : <Menu />}
+              {dark ? <Sun /> : <Moon />}
             </Button>
-            <span className="text-lg font-bold">Dorado</span>
-          </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={toggle}
-            aria-label={dark ? "Przełącz na jasny motyw" : "Przełącz na ciemny motyw"}
-          >
-            {dark ? <Sun /> : <Moon />}
-          </Button>
-        </header>
+          </header>
 
-        {menuOpen && (
-          <div id="mobile-nav" className="border-b bg-card p-3 md:hidden">
-            <NavLinks onNavigate={() => setMenuOpen(false)} />
-          </div>
-        )}
+          {menuOpen && (
+            <div
+              id="mobile-nav"
+              className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-b bg-card p-3 lg:hidden"
+            >
+              <NavLinks onNavigate={() => setMenuOpen(false)} />
+            </div>
+          )}
+        </div>
 
         <main className="min-w-0 flex-1 p-4 md:p-6">
           <Outlet />
