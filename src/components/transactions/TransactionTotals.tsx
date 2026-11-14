@@ -20,7 +20,7 @@ export function TransactionTotals({ totals, filtered }: TransactionTotalsProps) 
 
   return (
     <section aria-label="Podsumowanie" className="rounded-xl border bg-card">
-      <dl className="grid grid-cols-3 divide-x">
+      <dl className="grid grid-cols-1 divide-y min-[420px]:grid-cols-3 min-[420px]:divide-x min-[420px]:divide-y-0">
         {items.map((item) => (
           <div key={item.label} className="min-w-0 px-4 py-3">
             <dt className="text-xs text-muted-foreground">{item.label}</dt>
