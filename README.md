@@ -100,9 +100,9 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 | Osoba | GitHub | Rola | Własne funkcje |
 | --- | --- | --- | --- |
 | Denys Kononchuk (58843) | [@DENI3401](https://github.com/DENI3401) | Team Lead / React Architect | F1 Store Zustand + persist, F2 Cykl budżetowy i rollover, F3 Alert niskiego salda, F16 Testy Vitest |
-| Illia Isaiev (58835) | [@LOGIN-ILLI](https://github.com/LOGIN-ILLI) | UI/UX Lead | F4 Menedżer subskrypcji, F5 Kalendarz płatności, F6 Ustawienia, F7 Toast, Undo i modale potwierdzenia |
-| Mykola Safiiuk (56103) | [@LOGIN-MYKOLI](https://github.com/LOGIN-MYKOLI) | Module Lead: Subscription & Transactions Manager | F8 Formularz wydatków, F9 Przychody (stałe i premie), F10 Kategorie własne, F11 Historia transakcji |
-| Roman Melnyk (56175) | [@LOGIN-ROMANA](https://github.com/LOGIN-ROMANA) | Module Lead: Analytics & Charts | F12 Dashboard i wykresy, F13 Safe-to-Spend, F14 Eksport i import JSON, F15 Seed demo |
+| Illia Isaiev (58835) | [@SKAYT950](https://github.com/SKAYT950) | UI/UX Lead | F4 Menedżer subskrypcji, F5 Kalendarz płatności, F6 Ustawienia, F7 Toast, Undo i modale potwierdzenia |
+| Mykola Safiiuk (56103) | [@sksooper](https://github.com/sksooper) | Module Lead: Subscription & Transactions Manager | F8 Formularz wydatków, F9 Przychody (stałe i premie), F10 Kategorie własne, F11 Historia transakcji |
+| Roman Melnyk (56175) | [@Roman767409](https://github.com/Roman767409) | Module Lead: Analytics & Charts | F12 Dashboard i wykresy, F13 Safe-to-Spend, F14 Eksport i import JSON, F15 Seed demo |
 
 ### Mapa funkcji
 
