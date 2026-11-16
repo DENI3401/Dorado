@@ -81,7 +81,7 @@ export function CategoriesDialog({ open, onOpenChange }: CategoriesDialogProps) 
           </DialogDescription>
         </DialogHeader>
 
-        <div className="max-h-[55vh] overflow-y-auto pr-1">
+        <div className="max-h-[55dvh] overflow-y-auto pr-1">
           {GROUPS.map((group) => (
             <section key={group.type} aria-label={group.title} className="mb-4 last:mb-0">
               <h3 className="mb-1 text-sm font-medium text-muted-foreground">{group.title}</h3>

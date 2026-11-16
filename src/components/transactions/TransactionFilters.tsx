@@ -179,7 +179,7 @@ export function TransactionFilters({ filters, setFilter, reset, isFiltering }: T
                   aria-pressed={active}
                   onClick={() => toggleCategory(category.id)}
                   className={cn(
-                    "inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-sm transition outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                    "inline-flex h-8 pointer-coarse:h-10 items-center gap-1.5 rounded-full border px-3 text-sm transition outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                     active ? "font-medium" : "text-muted-foreground hover:bg-muted",
                   )}
                   style={

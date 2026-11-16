@@ -164,7 +164,7 @@ function SubscriptionFormBody({ subscription, onClose }: BodyProps) {
             rows={2}
             maxLength={200}
             aria-invalid={errors.note ? true : undefined}
-            className={cn(inputClass, "h-auto min-h-16 resize-none py-2")}
+            className={cn(inputClass, "h-auto pointer-coarse:h-auto min-h-16 resize-none py-2")}
             {...register("note")}
           />
         </Field>
