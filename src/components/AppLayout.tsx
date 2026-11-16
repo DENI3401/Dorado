@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import { useTheme } from "next-themes";
 import {
   LayoutDashboard,
   Receipt,
@@ -9,12 +10,15 @@ import {
   Moon,
   Sun,
   Menu,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSyncSubscriptionPayments } from "@/hooks/useSyncSubscriptionPayments";
-import { useTheme } from "@/hooks/useTheme";
-import { cn } from "@/lib/utils";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 
 const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -34,15 +38,14 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           end={to === "/"}
           onClick={onNavigate}
           className={({ isActive }) =>
-            cn(
-              "flex items-center gap-2 rounded-md px-3 py-2 text-sm transition outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+            `flex items-center gap-2 rounded-md px-3 py-2 text-sm transition ${
               isActive
-                ? "bg-indigo-600 text-white"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground",
-            )
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-accent hover:text-accent-foreground"
+            }`
           }
         >
-          <Icon size={18} aria-hidden="true" /> {label}
+          <Icon size={18} /> {label}
         </NavLink>
       ))}
     </nav>
@@ -50,61 +53,49 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export default function AppLayout() {
-  const { dark, toggle } = useTheme();
-  useSyncSubscriptionPayments();
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  // Esc zamyka menu na telefonie.
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [menuOpen]);
+  const { resolvedTheme, setTheme } = useTheme();
+  const [open, setOpen] = useState(false);
+  const dark = resolvedTheme === "dark";
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      <aside className="hidden w-64 shrink-0 border-r bg-card p-4 md:block">
+      <aside className="hidden w-64 shrink-0 border-r border-border bg-card p-4 text-card-foreground md:block">
         <h1 className="mb-6 text-xl font-bold">Dorado</h1>
         <NavLinks />
       </aside>
 
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="left" className="w-64 p-4">
+          <SheetHeader className="p-0">
+            <SheetTitle>Dorado</SheetTitle>
+            <SheetDescription className="sr-only">Nawigacja</SheetDescription>
+          </SheetHeader>
+          <NavLinks onNavigate={() => setOpen(false)} />
+        </SheetContent>
+      </Sheet>
+
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b bg-card px-4 py-3 md:justify-end">
-          <div className="flex items-center gap-2 md:hidden">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => setMenuOpen((open) => !open)}
-              aria-label={menuOpen ? "Zamknij menu" : "Otwórz menu"}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-nav"
-            >
-              {menuOpen ? <X /> : <Menu />}
-            </Button>
-            <span className="text-lg font-bold">Dorado</span>
-          </div>
+        <header className="flex items-center justify-between border-b border-border p-4">
           <Button
-            type="button"
             variant="ghost"
             size="icon"
-            onClick={toggle}
-            aria-label={dark ? "Przełącz na jasny motyw" : "Przełącz na ciemny motyw"}
+            className="md:hidden"
+            onClick={() => setOpen(true)}
+            aria-label="Menu"
           >
-            {dark ? <Sun /> : <Moon />}
+            <Menu size={20} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-auto"
+            onClick={() => setTheme(dark ? "light" : "dark")}
+            aria-label="Zmień motyw"
+          >
+            {dark ? <Sun size={20} /> : <Moon size={20} />}
           </Button>
         </header>
-
-        {menuOpen && (
-          <div id="mobile-nav" className="border-b bg-card p-3 md:hidden">
-            <NavLinks onNavigate={() => setMenuOpen(false)} />
-          </div>
-        )}
-
-        <main className="min-w-0 flex-1 p-4 md:p-6">
+        <main className="flex-1 p-4 md:p-6">
           <Outlet />
         </main>
       </div>
