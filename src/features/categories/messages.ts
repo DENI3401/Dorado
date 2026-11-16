@@ -20,7 +20,12 @@ export function removedCategoryMessage(result: DeleteCategoryResult): string {
       ? "Kategorii domyślnych nie można usuwać"
       : "Nie znaleziono kategorii";
   }
-  return result.reassigned > 0
-    ? `Usunięto kategorię „${result.category.name}”, przeniesiono operacje: ${result.reassigned}`
+  const moved: string[] = [];
+  if (result.reassigned > 0) moved.push(`operacje: ${result.reassigned}`);
+  if (result.reassignedSubscriptions > 0) {
+    moved.push(`subskrypcje: ${result.reassignedSubscriptions}`);
+  }
+  return moved.length > 0
+    ? `Usunięto kategorię „${result.category.name}”, przeniesiono ${moved.join(", ")}`
     : `Usunięto kategorię „${result.category.name}”`;
 }
