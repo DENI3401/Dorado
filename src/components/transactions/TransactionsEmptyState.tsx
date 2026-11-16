@@ -1,14 +1,14 @@
-import { Receipt, SearchX } from "lucide-react";
+import { Receipt, SearchX, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface EmptyStateProps {
-  icon: typeof Receipt;
+  icon: LucideIcon;
   title: string;
   description: string;
   children: ReactNode;
 }
 
-function EmptyState({ icon: Icon, title, description, children }: EmptyStateProps) {
+export function EmptyState({ icon: Icon, title, description, children }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed px-6 py-14 text-center">
       <span className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground">

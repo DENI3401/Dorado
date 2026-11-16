@@ -3,7 +3,7 @@ import { ArrowDown, ArrowUp, ChevronDown, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { inputClass } from "@/components/ui/field";
 import { Segmented } from "@/components/ui/segmented";
-import { getCategoryIcon } from "@/components/categories/categoryIcons";
+import { CategoryIcon } from "@/components/categories/CategoryIcon";
 import { useAllCategories } from "@/features/categories";
 import {
   INCOME_KIND_LABELS,
@@ -171,7 +171,6 @@ export function TransactionFilters({ filters, setFilter, reset, isFiltering }: T
         <div id="more-filters" className="grid gap-3 rounded-xl border bg-card p-3">
           <div className="flex flex-wrap gap-1.5" role="group" aria-label="Kategorie">
             {visibleCategories.map((category) => {
-              const Icon = getCategoryIcon(category.icon);
               const active = filters.categoryIds.includes(category.id);
               return (
                 <button
@@ -189,7 +188,11 @@ export function TransactionFilters({ filters, setFilter, reset, isFiltering }: T
                       : undefined
                   }
                 >
-                  <Icon className="size-3.5" style={{ color: category.color }} />
+                  <CategoryIcon
+                    name={category.icon}
+                    className="size-3.5"
+                    style={{ color: category.color }}
+                  />
                   {category.name}
                 </button>
               );

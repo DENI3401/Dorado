@@ -1,7 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import AppLayout from "./components/AppLayout";
+import Calendar from "./pages/Calendar";
 import Placeholder from "./pages/Placeholder";
+import Subscriptions from "./pages/Subscriptions";
 import Transactions from "./pages/Transactions";
 
 export default function App() {
@@ -11,8 +13,8 @@ export default function App() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<Placeholder title="Dashboard" />} />
           <Route path="/transactions" element={<Transactions />} />
-          <Route path="/subscriptions" element={<Placeholder title="Subskrypcje" />} />
-          <Route path="/calendar" element={<Placeholder title="Kalendarz płatności" />} />
+          <Route path="/subscriptions" element={<Subscriptions />} />
+          <Route path="/calendar" element={<Calendar />} />
           <Route path="/settings" element={<Placeholder title="Ustawienia" />} />
         </Route>
       </Routes>

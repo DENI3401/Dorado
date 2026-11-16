@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Field, inputClass } from "@/components/ui/field";
 import { Segmented } from "@/components/ui/segmented";
-import { getCategoryIcon } from "@/components/categories/categoryIcons";
+import { CategoryIcon } from "@/components/categories/CategoryIcon";
 import {
   INCOME_KIND_LABELS,
   TRANSACTION_TYPE_LABELS,
@@ -172,7 +172,6 @@ function TransactionFormBody({ transaction, defaultType, onClose }: BodyProps) {
                 className="flex flex-wrap gap-1.5"
               >
                 {categories.map((category) => {
-                  const Icon = getCategoryIcon(category.icon);
                   const active = field.value === category.id;
                   return (
                     <button
@@ -191,7 +190,11 @@ function TransactionFormBody({ transaction, defaultType, onClose }: BodyProps) {
                           : undefined
                       }
                     >
-                      <Icon className="size-3.5" style={{ color: category.color }} />
+                      <CategoryIcon
+                        name={category.icon}
+                        className="size-3.5"
+                        style={{ color: category.color }}
+                      />
                       {category.name}
                     </button>
                   );

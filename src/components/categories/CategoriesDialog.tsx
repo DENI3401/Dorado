@@ -27,6 +27,7 @@ import {
 } from "@/features/categories";
 import {
   TRANSACTION_TYPE_LABELS,
+  countSubscriptionsInCategory,
   countTransactionsInCategory,
   deleteCategory,
   type TransactionType,
@@ -56,7 +57,12 @@ export function CategoriesDialog({ open, onOpenChange }: CategoriesDialogProps) 
   }>({ open: false, category: null, usedBy: 0 });
 
   const askRemove = (category: Category) =>
-    setRemoval({ open: true, category, usedBy: countTransactionsInCategory(category.id) });
+    setRemoval({
+      open: true,
+      category,
+      // Do „Inne” trafiają i operacje, i subskrypcje — pokaż w potwierdzeniu obie liczby.
+      usedBy: countTransactionsInCategory(category.id) + countSubscriptionsInCategory(category.id),
+    });
 
   const confirmRemove = () => {
     if (!removal.category) return;
