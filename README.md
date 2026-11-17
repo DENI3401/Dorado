@@ -97,37 +97,43 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 
 ## 7. Skład zespołu i podział odpowiedzialności
 
-| Osoba | GitHub | Rola | Własne funkcje |
-| --- | --- | --- | --- |
-| Denys Kononchuk (58843) | [@DENI3401](https://github.com/DENI3401) | Team Lead / React Architect | F1 Store Zustand + persist, F2 Cykl budżetowy i rollover, F3 Alert niskiego salda, F16 Testy Vitest |
-| Illia Isaiev (58835) | [@SKAYT950](https://github.com/SKAYT950) | UI/UX Lead | F4 Menedżer subskrypcji, F5 Kalendarz płatności, F6 Ustawienia, F7 Toast, Undo i modale potwierdzenia |
-| Mykola Safiiuk (56103) | [@sksooper](https://github.com/sksooper) | Module Lead: Subscription & Transactions Manager | F8 Formularz wydatków, F9 Przychody (stałe i premie), F10 Kategorie własne, F11 Historia transakcji |
-| Roman Melnyk (56175) | [@Roman767409](https://github.com/Roman767409) | Module Lead: Analytics & Charts | F12 Dashboard i wykresy, F13 Safe-to-Spend, F14 Eksport i import JSON, F15 Seed demo |
+> Stan na 17.11.2026. Podział zaktualizowano na podstawie historii commitów: w praktyce moduły transakcji, kategorii i subskrypcji zostały podzielone **warstwowo** (Mykola: logika, typy, store, schematy Zod, testy; Illia: komponenty UI, strony, kalendarz), a nie według pierwotnego przydziału funkcji.
+
+| Osoba | GitHub | Rola | Zrealizowane | Do zrobienia |
+| --- | --- | --- | --- | --- |
+| Denys Kononchuk (58843) | [@DENI3401](https://github.com/DENI3401) | Team Lead / React Architect | F0 Inicjalizacja i makieta bazowa, bazowy Toaster i dialogi Shadcn (F7), tunel do testów na telefonach (F17), przegląd i scalanie PR | F2 Cykl budżetowy, rollover i store ustawień, F3 Alert niskiego salda, F16 Testy Vitest |
+| Illia Isaiev (58835) | [@SKAYT950](https://github.com/SKAYT950) | UI/UX Lead | UI dla F4, F8, F10, F11; F5 Kalendarz płatności; F7 Toast, Undo i modale; synchronizacja płatności subskrypcji z transakcjami (F4); F17 Responsywność | F6 Ustawienia |
+| Mykola Safiiuk (56103) | [@sksooper](https://github.com/sksooper) | Module Lead: Logika danych (Transactions, Categories, Subscriptions) | F1 Warstwa danych i store; logika i schematy Zod dla F4, F8, F10, F11; konfiguracja Vitest | F9 Wynagrodzenie stałe, F14 Eksport i import JSON |
+| Roman Melnyk (56175) | [@Roman767409](https://github.com/Roman767409) | Module Lead: Analytics & Charts | — | F12 Dashboard i wykresy, F13 Safe-to-Spend, F15 Seed demo |
 
 ### Mapa funkcji
 
-| ID | Funkcja | Właściciel | Etap (Milestone) |
-| --- | --- | --- | --- |
-| F1 | Store Zustand + persist (typy, akcje) | Denys | Etap 2 |
-| F2 | Cykl budżetowy i rollover | Denys | Etap 3 |
-| F3 | Alert niskiego salda (Trigger Once) | Denys | Etap 3 |
-| F4 | Menedżer subskrypcji | Illia | Etap 3 |
-| F5 | Kalendarz płatności | Illia | Etap 3 |
-| F6 | Ustawienia (próg alertu, dzień cyklu) | Illia | Etap 3 |
-| F7 | Toast, Undo i modale potwierdzenia | Illia | Etap 2 |
-| F8 | Formularz wydatków (Zod) | Mykola | Etap 2 |
-| F9 | Przychody: stałe i premie | Mykola | Etap 2 |
-| F10 | Kategorie własne | Mykola | Etap 4 |
-| F11 | Historia transakcji (filtry, edycja) | Mykola | Etap 2 |
-| F12 | Dashboard i wykresy Recharts | Roman | Etap 4 |
-| F13 | Wskaźnik Safe-to-Spend | Roman | Etap 4 |
-| F14 | Eksport i import JSON | Roman | Etap 4 |
-| F15 | Seed demo (dane testowe) | Roman | Etap 5 |
-| F16 | Testy Vitest i edge cases | Denys | Etap 5 |
+| ID | Funkcja | Właściciel | Etap (Milestone) | Status |
+| --- | --- | --- | --- | --- |
+| F0 | Inicjalizacja projektu, motywy i makieta bazowa | Denys | Etap 1 | ✅ Zamknięte |
+| F1 | Warstwa danych: typy i store Zustand + persist | Mykola | Etap 2 | ✅ Zamknięte |
+| F2 | Cykl budżetowy, rollover i store ustawień | Denys | Etap 3 | ⏳ Otwarte |
+| F3 | Alert niskiego salda (Trigger Once) | Denys | Etap 3 | ⏳ Otwarte |
+| F4 | Menedżer subskrypcji i automatyczne płatności | Mykola (logika), Illia (UI) | Etap 3 | ✅ Zamknięte |
+| F5 | Kalendarz płatności | Illia | Etap 3 | ✅ Zamknięte |
+| F6 | Ustawienia (próg alertu, dzień cyklu) | Illia | Etap 3 | ⏳ Otwarte |
+| F7 | Toast, Undo i modale potwierdzenia | Illia, Denys | Etap 2 | ✅ Zamknięte |
+| F8 | Formularz transakcji: wydatki i przychody jednorazowe | Mykola (Zod), Illia (UI) | Etap 2 | ✅ Zamknięte |
+| F9 | Wynagrodzenie stałe (przychód cykliczny) | Mykola | Etap 3 | ⏳ Otwarte |
+| F10 | Kategorie własne | Mykola (logika), Illia (UI) | Etap 2 | ✅ Zamknięte |
+| F11 | Historia transakcji (filtry, edycja) | Mykola (logika), Illia (UI) | Etap 2 | ✅ Zamknięte |
+| F12 | Dashboard i wykresy Recharts | Roman | Etap 4 | ⏳ Otwarte |
+| F13 | Wskaźnik Safe-to-Spend | Roman | Etap 4 | ⏳ Otwarte |
+| F14 | Eksport i import JSON | Mykola | Etap 4 | ⏳ Otwarte |
+| F15 | Seed demo (dane testowe) | Roman | Etap 5 | ⏳ Otwarte |
+| F16 | Testy Vitest i edge cases | Denys | Etap 5 | ⏳ Otwarte |
+| F17 | Responsywność i testy na urządzeniach mobilnych | Illia, Denys | Etap 3 | ✅ Zamknięte |
 
 ### Zasady pracy
 
 - Każda funkcja ma osobne Issue (Assignee, Milestone, etykieta `funkcja`) z opisem: Co robi użytkownik / Widok / Dane / Najtrudniejsze / Gotowe, gdy.
+- Jeśli nad funkcją pracują dwie osoby (np. logika i UI), obie są przypisane jako Assignees, a podział jest opisany w Issue.
+- Issue zamyka się automatycznie przez `Closes #<numer>` w opisie Pull Requesta.
 - Praca w gałęzi `feature/<nazwa>`, scalanie przez Pull Request do `test`, a `test` → `main` po ukończeniu etapu.
 - Team Lead przegląda Pull Requesty.
 
