@@ -1,0 +1,11 @@
+// Publiczne API modułu subskrypcji — importuj stąd: import { ... } from "@/features/subscriptions";
+export * from "./types";
+export * from "./schema";
+export * from "./schedule";
+export * from "./messages";
+export { useSubscriptionsStore } from "./store";
+export { useSubscriptionForm, type SubscriptionSavedEvent } from "./hooks/useSubscriptionForm";
+export { useSubscriptions } from "./hooks/useSubscriptions";
+export { useSubscriptionActions, type RemovedSubscription } from "./hooks/useSubscriptionActions";
+export { usePayments } from "./hooks/usePayments";
+export { useNextPayment } from "./hooks/useNextPayment";
