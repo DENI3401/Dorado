@@ -45,4 +45,31 @@ describe("makeTransactionFormSchema", () => {
     expect(schema.safeParse({ ...valid, categoryId: "cat-income-salary" }).success).toBe(false);
     expect(schema.safeParse({ ...valid, categoryId: "nope" }).success).toBe(false);
   });
+
+  describe("cykliczność (F9)", () => {
+    const salary = {
+      ...valid,
+      type: "income",
+      incomeKind: "salary",
+      categoryId: "cat-income-salary",
+    };
+
+    it("akceptuje recurring dla wynagrodzenia stałego", () => {
+      expect(schema.safeParse({ ...salary, recurring: true }).success).toBe(true);
+    });
+
+    it("odrzuca recurring dla premii", () => {
+      const r = schema.safeParse({ ...salary, incomeKind: "bonus", recurring: true });
+      expect(r.success).toBe(false);
+    });
+
+    it("odrzuca recurring dla wydatku", () => {
+      expect(schema.safeParse({ ...valid, recurring: true }).success).toBe(false);
+    });
+
+    it("recurring: false lub brak pola jest zawsze w porządku", () => {
+      expect(schema.safeParse({ ...valid, recurring: false }).success).toBe(true);
+      expect(schema.safeParse(salary).success).toBe(true);
+    });
+  });
 });
