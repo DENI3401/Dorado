@@ -4,3 +4,5 @@ export { useRecurringIncomeStore } from "./store";
 export { planRecurringIncome, isSalaryRecorded, type SalaryPlan } from "./plan";
 export { syncRecurringIncome } from "./sync";
 export * from "./messages";
+export { useRecurringIncomes } from "./hooks/useRecurringIncomes";
+export { useRecurringIncomeActions, type RemovedRecurringIncome } from "./hooks/useRecurringIncomeActions";
