@@ -19,6 +19,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useSyncRecurringIncome } from "@/hooks/useSyncRecurringIncome";
 import { useSyncSubscriptionPayments } from "@/hooks/useSyncSubscriptionPayments";
 
 const links = [
@@ -56,6 +57,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 export default function AppLayout() {
   // Dopisuje do historii wydatki z subskrypcji, których termin już minął (na każdej podstronie).
   useSyncSubscriptionPayments();
+  // Księguje wynagrodzenia cykliczne (F9), których termin już nadszedł.
+  useSyncRecurringIncome();
 
   const { resolvedTheme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
