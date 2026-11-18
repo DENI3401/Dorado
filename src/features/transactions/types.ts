@@ -18,4 +18,6 @@ export interface Transaction {
   createdAt: string;
   /** Wypełniane przez moduł subskrypcji dla wydatków generowanych automatycznie. */
   subscriptionId?: string;
+  /** Wypełniane przez moduł cyklicznych przychodów dla wynagrodzeń księgowanych automatycznie. */
+  recurringIncomeId?: string;
 }
