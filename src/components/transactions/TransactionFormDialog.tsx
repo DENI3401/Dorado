@@ -45,6 +45,11 @@ const TYPE_OPTIONS = [
   },
 ] as const;
 
+const RECURRING_OPTIONS = [
+  { value: "once", label: "Jednorazowo" },
+  { value: "monthly", label: "Co miesiąc" },
+] as const;
+
 const INCOME_KIND_OPTIONS = (Object.keys(INCOME_KIND_LABELS) as IncomeKind[]).map((value) => ({
   value,
   label: INCOME_KIND_LABELS[value],
@@ -77,7 +82,7 @@ interface BodyProps {
 }
 
 function TransactionFormBody({ transaction, defaultType, onClose }: BodyProps) {
-  const { form, submit, categories, type, isEditing } = useTransactionForm({
+  const { form, submit, categories, type, isEditing, canRepeat, recurring } = useTransactionForm({
     transaction,
     defaultType,
     onSaved: (event) => {
@@ -134,6 +139,32 @@ function TransactionFormBody({ transaction, defaultType, onClose }: BodyProps) {
                   value={field.value ?? "bonus"}
                   onChange={field.onChange}
                   options={INCOME_KIND_OPTIONS}
+                />
+              )}
+            />
+          </Field>
+        )}
+
+        {canRepeat && (
+          <Field
+            label="Częstotliwość"
+            labelId={`${id}-recurring`}
+            error={errors.recurring?.message}
+            hint={
+              recurring
+                ? "Wynagrodzenie będzie księgowane automatycznie co miesiąc, w dniu z pola daty."
+                : undefined
+            }
+          >
+            <Controller
+              control={control}
+              name="recurring"
+              render={({ field }) => (
+                <Segmented
+                  label="Częstotliwość wpływu"
+                  value={field.value ? "monthly" : "once"}
+                  onChange={(value) => field.onChange(value === "monthly")}
+                  options={RECURRING_OPTIONS}
                 />
               )}
             />
@@ -204,7 +235,11 @@ function TransactionFormBody({ transaction, defaultType, onClose }: BodyProps) {
           />
         </Field>
 
-        <Field label="Data" htmlFor={`${id}-date`} error={errors.date?.message}>
+        <Field
+          label={recurring ? "Data pierwszego wpływu" : "Data"}
+          htmlFor={`${id}-date`}
+          error={errors.date?.message}
+        >
           <input
             id={`${id}-date`}
             type="date"
@@ -234,7 +269,13 @@ function TransactionFormBody({ transaction, defaultType, onClose }: BodyProps) {
             disabled={isSubmitting}
             className="bg-indigo-600 text-white hover:bg-indigo-500"
           >
-            {isEditing ? "Zapisz zmiany" : type === "income" ? "Dodaj przychód" : "Dodaj wydatek"}
+            {isEditing
+              ? "Zapisz zmiany"
+              : recurring
+                ? "Ustaw wynagrodzenie cykliczne"
+                : type === "income"
+                  ? "Dodaj przychód"
+                  : "Dodaj wydatek"}
           </Button>
         </DialogFooter>
       </form>

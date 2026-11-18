@@ -1,4 +1,4 @@
-import { Pencil, Repeat, Trash2 } from "lucide-react";
+import { CalendarClock, Pencil, Repeat, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CategoryBadge } from "@/components/categories/CategoryBadge";
 import {
@@ -33,6 +33,12 @@ export function TransactionRow({ transaction: t, category, onEdit, onDelete }: T
             <span className="hidden rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground sm:inline">
               {INCOME_KIND_LABELS[t.incomeKind]}
             </span>
+          )}
+          {t.recurringIncomeId && (
+            <CalendarClock
+              className="size-3.5 text-muted-foreground"
+              aria-label="Wynagrodzenie cykliczne"
+            />
           )}
           {t.subscriptionId && (
             <Repeat
