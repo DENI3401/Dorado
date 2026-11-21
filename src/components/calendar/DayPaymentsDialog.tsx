@@ -42,7 +42,7 @@ export function DayPaymentsDialog({
           <DialogDescription>Suma tego dnia: {formatPLN(total)}</DialogDescription>
         </DialogHeader>
 
-        <ul className="max-h-[50dvh] divide-y overflow-y-auto">
+        <ul className="min-h-0 flex-1 divide-y overflow-y-auto">
           {occurrences.map((occurrence) => (
             <PaymentRow
               key={occurrence.subscriptionId}
