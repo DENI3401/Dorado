@@ -1,6 +1,7 @@
 import { FALLBACK_CATEGORY_ID } from "@/features/categories/defaultCategories";
 import { useCategoriesStore } from "@/features/categories/store";
 import type { Category } from "@/features/categories/types";
+import { useRecurringIncomeStore } from "@/features/recurring-income/store";
 import { useSubscriptionsStore } from "@/features/subscriptions/store";
 import { useTransactionsStore } from "./store";
 
@@ -12,11 +13,13 @@ export type DeleteCategoryResult =
       reassigned: number;
       /** Liczba przeniesionych subskrypcji. */
       reassignedSubscriptions: number;
+      /** Liczba przeniesionych wynagrodzeń cyklicznych. */
+      reassignedRecurringIncomes: number;
     }
   | { ok: false; reason: "not_found" | "default" };
 
 /**
- * Usuwa własną kategorię. Operacje i subskrypcje, które jej używały, trafiają do
+ * Usuwa własną kategorię. Operacje, subskrypcje i wynagrodzenia cykliczne, które jej używały, trafiają do
  * kategorii zapasowej ("Inne wydatki" / "Inne przychody"), więc dane nie tracą spójności.
  */
 export function deleteCategory(id: string): DeleteCategoryResult {
@@ -30,8 +33,11 @@ export function deleteCategory(id: string): DeleteCategoryResult {
   const reassignedSubscriptions = useSubscriptionsStore
     .getState()
     .reassignCategory(id, fallbackId);
+  const reassignedRecurringIncomes = useRecurringIncomeStore
+    .getState()
+    .reassignCategory(id, fallbackId);
   categories.removeCategory(id);
-  return { ok: true, category, reassigned, reassignedSubscriptions };
+  return { ok: true, category, reassigned, reassignedSubscriptions, reassignedRecurringIncomes };
 }
 
 /** Liczba operacji przypisanych do kategorii (do tekstu w modalu potwierdzenia). */

@@ -13,7 +13,7 @@ import {
   sumYearlyCost,
   yearlyCost,
 } from "./schedule";
-import type { Subscription } from "./types";
+import type { ScheduleRule, Subscription } from "./types";
 
 const sub = (over: Partial<Subscription> = {}): Subscription => ({
   id: "s1",
@@ -219,5 +219,32 @@ describe("buildPayments", () => {
   it("transakcja z tą samą datą, ale innej subskrypcji nie oznacza płatności", () => {
     const r = buildPayments([sub()], [tx({ subscriptionId: "other" }), tx({})], "2026-02-01", "2026-02-28");
     expect(r.occurrences[0].paid).toBe(false);
+  });
+});
+
+describe("ScheduleRule (nie tylko subskrypcje)", () => {
+  const rule: ScheduleRule = {
+    period: "monthly",
+    startDate: "2026-01-31",
+    endDate: null,
+    isActive: true,
+  };
+
+  it("getOccurrences liczy daty dla samej reguły, z korektą dnia w krótszych miesiącach", () => {
+    expect(getOccurrences(rule, "2026-01-01", "2026-03-31")).toEqual([
+      "2026-01-31",
+      "2026-02-28",
+      "2026-03-31",
+    ]);
+  });
+
+  it("wstrzymana reguła nie ma dat, a nextOccurrence zwraca null", () => {
+    const paused = { ...rule, isActive: false };
+    expect(getOccurrences(paused, "2026-01-01", "2026-12-31")).toEqual([]);
+    expect(nextOccurrence(paused, "2026-01-01")).toBeNull();
+  });
+
+  it("nextOccurrence znajduje najbliższy wpływ po podanej dacie", () => {
+    expect(nextOccurrence(rule, "2026-02-28")).toBe("2026-03-31");
   });
 });

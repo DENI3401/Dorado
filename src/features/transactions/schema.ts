@@ -34,6 +34,8 @@ export const isoDateSchema = z
 export const transactionFormBase = z.object({
   type: z.enum(["income", "expense"], "Wybierz typ operacji"),
   incomeKind: z.enum(["salary", "bonus"]).optional(),
+  /** Tylko dla wynagrodzenia stałego: księguj co miesiąc w dniu z pola „Data” (F9). */
+  recurring: z.boolean().optional(),
   amount: amountSchema,
   categoryId: z.string().min(1, "Wybierz kategorię"),
   date: isoDateSchema,
@@ -47,7 +49,8 @@ export type TransactionFormValues = z.output<typeof transactionFormBase>;
 
 /**
  * Schemat z regułami zależnymi od danych: rodzaj przychodu wymagany tylko dla
- * przychodów, a kategoria musi istnieć i zgadzać się z typem operacji.
+ * przychodów, cykliczność tylko dla wynagrodzenia stałego, a kategoria musi istnieć
+ * i zgadzać się z typem operacji.
  */
 export function makeTransactionFormSchema(categories: readonly Category[]) {
   return transactionFormBase.superRefine((values, ctx) => {
@@ -56,6 +59,13 @@ export function makeTransactionFormSchema(categories: readonly Category[]) {
         code: "custom",
         path: ["incomeKind"],
         message: "Wybierz rodzaj przychodu",
+      });
+    }
+    if (values.recurring && !(values.type === "income" && values.incomeKind === "salary")) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["recurring"],
+        message: "Cyklicznie można księgować tylko wynagrodzenie stałe",
       });
     }
     const category = categories.find((c) => c.id === values.categoryId);

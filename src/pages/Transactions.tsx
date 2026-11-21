@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Plus, Tags } from "lucide-react";
 import { CategoriesDialog } from "@/components/categories/CategoriesDialog";
+import { RecurringIncomeSection } from "@/components/recurring-income/RecurringIncomeSection";
 import { Button } from "@/components/ui/button";
 import { DeleteTransactionDialog } from "@/components/transactions/DeleteTransactionDialog";
 import { TransactionFilters } from "@/components/transactions/TransactionFilters";
@@ -64,6 +65,8 @@ export default function Transactions() {
           </Button>
         </div>
       </div>
+
+      <RecurringIncomeSection />
 
       {isEmpty ? (
         <NoTransactionsState>

@@ -9,6 +9,7 @@ import { isValidIsoDate } from "@/features/transactions/utils/isoDate";
 import { roundMoney } from "@/features/transactions/utils/money";
 import type {
   PaymentOccurrence,
+  ScheduleRule,
   Subscription,
   SubscriptionStatus,
 } from "./types";
@@ -54,31 +55,32 @@ export function addDaysIso(iso: string, days: number): string {
 
 /**
  * Daty płatności w przedziale [fromIso, toIso] (obie granice włącznie),
- * rosnąco. Subskrypcja wstrzymana (isActive: false) daje pustą listę.
+ * rosnąco. Reguła wstrzymana (isActive: false) daje pustą listę.
+ * Przyjmuje dowolną ScheduleRule: subskrypcję albo cykliczny przychód.
  *
  * - monthly: dzień ze startDate; w krótszym miesiącu — ostatni dzień miesiąca.
  * - yearly: dzień i miesiąc ze startDate; 29 lutego w roku nieprzestępnym → 28 lutego.
  * - przed startDate płatności nie ma, endDate jest włącznie.
  */
 export function getOccurrences(
-  subscription: Subscription,
+  rule: ScheduleRule,
   fromIso: string,
   toIso: string,
 ): string[] {
-  if (!subscription.isActive) return [];
+  if (!rule.isActive) return [];
   if (!isValidIsoDate(fromIso) || !isValidIsoDate(toIso)) return [];
 
-  const lower = fromIso > subscription.startDate ? fromIso : subscription.startDate;
+  const lower = fromIso > rule.startDate ? fromIso : rule.startDate;
   const upper =
-    subscription.endDate && subscription.endDate < toIso ? subscription.endDate : toIso;
+    rule.endDate && rule.endDate < toIso ? rule.endDate : toIso;
   if (lower > upper) return [];
 
-  const start = parseIso(subscription.startDate);
+  const start = parseIso(rule.startDate);
   const from = parseIso(lower);
   const to = parseIso(upper);
   const result: string[] = [];
 
-  if (subscription.period === "monthly") {
+  if (rule.period === "monthly") {
     for (let y = from.y, m = from.m; y < to.y || (y === to.y && m <= to.m); ) {
       const date = formatIso({ y, m, d: clampDay(y, m, start.d) });
       if (date >= lower && date <= upper) result.push(date);
@@ -101,13 +103,13 @@ export function getOccurrences(
  * Najbliższa płatność **ściśle po** dacie `afterIso` (żeby uwzględnić dzisiejszą,
  * podaj wczorajszą datę). Zwraca null, gdy subskrypcja jest wstrzymana lub zakończona.
  */
-export function nextOccurrence(subscription: Subscription, afterIso: string): string | null {
-  if (!subscription.isActive || !isValidIsoDate(afterIso)) return null;
+export function nextOccurrence(rule: ScheduleRule, afterIso: string): string | null {
+  if (!rule.isActive || !isValidIsoDate(afterIso)) return null;
   const next = addDaysIso(afterIso, 1);
-  const from = next > subscription.startDate ? next : subscription.startDate;
+  const from = next > rule.startDate ? next : rule.startDate;
   // Okres miesięczny: max ~31 dni do kolejnej płatności, roczny: max ~366.
-  const horizon = addDaysIso(from, subscription.period === "monthly" ? 62 : 732);
-  return getOccurrences(subscription, from, horizon)[0] ?? null;
+  const horizon = addDaysIso(from, rule.period === "monthly" ? 62 : 732);
+  return getOccurrences(rule, from, horizon)[0] ?? null;
 }
 
 /** Koszt przeliczony na miesiąc (roczne dzielimy przez 12). */

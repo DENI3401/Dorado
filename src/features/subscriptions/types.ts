@@ -1,5 +1,19 @@
 export type BillingPeriod = "monthly" | "yearly";
 
+/**
+ * Minimalny opis harmonogramu — wystarcza do liczenia dat płatności.
+ * Spełniają go subskrypcje, a także cykliczne przychody (wynagrodzenie stałe).
+ */
+export interface ScheduleRule {
+  period: BillingPeriod;
+  /** YYYY-MM-DD; dzień miesiąca (i miesiąc przy yearly) bierzemy stąd. */
+  startDate: string;
+  /** YYYY-MM-DD albo null — bezterminowo (włącznie). */
+  endDate: string | null;
+  /** false = wstrzymana: harmonogram jest pusty. */
+  isActive: boolean;
+}
+
 export interface Subscription {
   id: string;
   name: string;

@@ -4,6 +4,7 @@ export * from "./schema";
 export * from "./filters";
 export * from "./messages";
 export * from "./actions";
+export * from "./incomeEvents";
 export { useTransactionsStore } from "./store";
 export { useTransactionForm, type TransactionSavedEvent } from "./hooks/useTransactionForm";
 export { useTransactionFilters } from "./hooks/useTransactionFilters";

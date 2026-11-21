@@ -1,5 +1,6 @@
 import type { IncomeKind, Transaction, TransactionType } from "./types";
 import type { TransactionSavedEvent } from "./hooks/useTransactionForm";
+import { recurringCreatedMessage } from "@/features/recurring-income/messages";
 import { formatPLN } from "./utils/money";
 
 /** Etykiety do selectów, filtrów i tabeli. */
@@ -17,6 +18,9 @@ const noun = (t: Transaction) => (t.type === "income" ? "przychód" : "wydatek")
 
 /** Gotowe teksty do Toastów (UI tylko je wyświetla). */
 export function savedTransactionMessage(event: TransactionSavedEvent): string {
+  if (event.action === "recurring-created") {
+    return recurringCreatedMessage(event.recurringIncome, event.booked);
+  }
   const { transaction: t } = event;
   const verb = event.action === "created" ? "Dodano" : "Zapisano zmiany:";
   return `${verb} ${noun(t)} ${formatPLN(t.amount)}`;
