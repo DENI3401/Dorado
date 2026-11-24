@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -78,96 +79,98 @@ function SubscriptionFormBody({ subscription, onClose }: BodyProps) {
         </DialogDescription>
       </DialogHeader>
 
-      <form onSubmit={submit} noValidate className="grid gap-4">
-        <Field label="Nazwa" htmlFor={`${id}-name`} error={errors.name?.message}>
-          <input
-            id={`${id}-name`}
-            type="text"
-            maxLength={40}
-            autoComplete="off"
-            aria-invalid={errors.name ? true : undefined}
-            className={inputClass}
-            {...register("name")}
-          />
-        </Field>
-
-        <Field label="Kwota" htmlFor={`${id}-amount`} error={errors.amount?.message}>
-          <div className="relative">
+      <form onSubmit={submit} noValidate className="flex min-h-0 flex-1 flex-col gap-4">
+        <DialogBody>
+          <Field label="Nazwa" htmlFor={`${id}-name`} error={errors.name?.message}>
             <input
-              id={`${id}-amount`}
+              id={`${id}-name`}
               type="text"
-              inputMode="decimal"
+              maxLength={40}
               autoComplete="off"
-              placeholder="0,00"
-              aria-invalid={errors.amount ? true : undefined}
-              className={cn(inputClass, "pr-9 text-right tabular-nums")}
-              {...register("amount")}
+              aria-invalid={errors.name ? true : undefined}
+              className={inputClass}
+              {...register("name")}
             />
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm text-muted-foreground"
-            >
-              zł
-            </span>
-          </div>
-        </Field>
+          </Field>
 
-        <Field label="Okres płatności" labelId={`${id}-period`} error={errors.period?.message}>
-          <Controller
-            control={control}
-            name="period"
-            render={({ field }) => (
-              <Segmented
-                label="Okres płatności"
-                value={field.value}
-                onChange={field.onChange}
-                options={PERIOD_OPTIONS}
+          <Field label="Kwota" htmlFor={`${id}-amount`} error={errors.amount?.message}>
+            <div className="relative">
+              <input
+                id={`${id}-amount`}
+                type="text"
+                inputMode="decimal"
+                autoComplete="off"
+                placeholder="0,00"
+                aria-invalid={errors.amount ? true : undefined}
+                className={cn(inputClass, "pr-9 text-right tabular-nums")}
+                {...register("amount")}
               />
-            )}
-          />
-        </Field>
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm text-muted-foreground"
+              >
+                zł
+              </span>
+            </div>
+          </Field>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field
-            label="Pierwsza płatność"
-            htmlFor={`${id}-start`}
-            error={errors.startDate?.message}
-            hint="Dzień tej daty wyznacza dzień płatności."
-          >
-            <input
-              id={`${id}-start`}
-              type="date"
-              aria-invalid={errors.startDate ? true : undefined}
-              className={inputClass}
-              {...register("startDate")}
+          <Field label="Okres płatności" labelId={`${id}-period`} error={errors.period?.message}>
+            <Controller
+              control={control}
+              name="period"
+              render={({ field }) => (
+                <Segmented
+                  label="Okres płatności"
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={PERIOD_OPTIONS}
+                />
+              )}
             />
           </Field>
-          <Field
-            label="Koniec (opcjonalnie)"
-            htmlFor={`${id}-end`}
-            error={errors.endDate?.message}
-            hint="Zostaw puste, jeśli subskrypcja nie ma końca."
-          >
-            <input
-              id={`${id}-end`}
-              type="date"
-              aria-invalid={errors.endDate ? true : undefined}
-              className={inputClass}
-              {...register("endDate")}
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field
+              label="Pierwsza płatność"
+              htmlFor={`${id}-start`}
+              error={errors.startDate?.message}
+              hint="Dzień tej daty wyznacza dzień płatności."
+            >
+              <input
+                id={`${id}-start`}
+                type="date"
+                aria-invalid={errors.startDate ? true : undefined}
+                className={inputClass}
+                {...register("startDate")}
+              />
+            </Field>
+            <Field
+              label="Koniec (opcjonalnie)"
+              htmlFor={`${id}-end`}
+              error={errors.endDate?.message}
+              hint="Zostaw puste, jeśli subskrypcja nie ma końca."
+            >
+              <input
+                id={`${id}-end`}
+                type="date"
+                aria-invalid={errors.endDate ? true : undefined}
+                className={inputClass}
+                {...register("endDate")}
+              />
+            </Field>
+          </div>
+
+          <Field label="Notatka (opcjonalnie)" htmlFor={`${id}-note`} error={errors.note?.message}>
+            <textarea
+              id={`${id}-note`}
+              rows={2}
+              maxLength={200}
+              aria-invalid={errors.note ? true : undefined}
+              className={cn(inputClass, "h-auto pointer-coarse:h-auto min-h-16 resize-none py-2")}
+              {...register("note")}
             />
           </Field>
-        </div>
-
-        <Field label="Notatka (opcjonalnie)" htmlFor={`${id}-note`} error={errors.note?.message}>
-          <textarea
-            id={`${id}-note`}
-            rows={2}
-            maxLength={200}
-            aria-invalid={errors.note ? true : undefined}
-            className={cn(inputClass, "h-auto pointer-coarse:h-auto min-h-16 resize-none py-2")}
-            {...register("note")}
-          />
-        </Field>
+        </DialogBody>
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>

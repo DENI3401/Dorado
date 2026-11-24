@@ -5,12 +5,7 @@ import { inputClass } from "@/components/ui/field";
 import { Segmented } from "@/components/ui/segmented";
 import { CategoryIcon } from "@/components/categories/CategoryIcon";
 import { useAllCategories } from "@/features/categories";
-import {
-  INCOME_KIND_LABELS,
-  TRANSACTION_TYPE_LABELS,
-  type IncomeKind,
-  type useTransactionFilters,
-} from "@/features/transactions";
+import { TRANSACTION_TYPE_LABELS, type useTransactionFilters } from "@/features/transactions";
 import { cn } from "@/lib/utils";
 
 type FiltersApi = ReturnType<typeof useTransactionFilters>;
@@ -72,7 +67,6 @@ export function TransactionFilters({ filters, setFilter, reset, isFiltering }: T
           value={filters.type}
           onChange={(value) => {
             setFilter("type", value);
-            if (value === "expense") setFilter("incomeKind", "all");
             // Kategorie z drugiego typu nie mają już sensu w filtrze.
             if (value !== "all") {
               setFilter(
@@ -107,22 +101,6 @@ export function TransactionFilters({ filters, setFilter, reset, isFiltering }: T
             className={cn(inputClass, "w-auto text-foreground")}
           />
         </label>
-
-        {filters.type !== "expense" && (
-          <select
-            value={filters.incomeKind}
-            onChange={(e) => setFilter("incomeKind", e.target.value as "all" | IncomeKind)}
-            aria-label="Rodzaj przychodu"
-            className={cn(inputClass, "w-auto")}
-          >
-            <option value="all">Każdy rodzaj przychodu</option>
-            {(Object.keys(INCOME_KIND_LABELS) as IncomeKind[]).map((kind) => (
-              <option key={kind} value={kind}>
-                {INCOME_KIND_LABELS[kind]}
-              </option>
-            ))}
-          </select>
-        )}
 
         <div className="ml-auto flex items-center gap-1.5">
           <select

@@ -1,9 +1,10 @@
 import { useId } from "react";
-import { Controller } from "react-hook-form";
+import { Controller, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -13,6 +14,10 @@ import {
 import { Field, inputClass } from "@/components/ui/field";
 import { Segmented } from "@/components/ui/segmented";
 import { CategoryIcon } from "@/components/categories/CategoryIcon";
+import {
+  categoriesForIncomeKind,
+  isCategoryAllowedForIncomeKind,
+} from "./incomeKindCategories";
 import {
   INCOME_KIND_LABELS,
   TRANSACTION_TYPE_LABELS,
@@ -97,6 +102,17 @@ function TransactionFormBody({ transaction, defaultType, onClose }: BodyProps) {
   } = form;
   const id = useId();
 
+  // Kategorie przychodu zależą od rodzaju: stałe wynagrodzenie → Wynagrodzenie, premia → Premia i Inne przychody.
+  const incomeKind = useWatch({ control, name: "incomeKind" });
+  const selectedCategoryId = useWatch({ control, name: "categoryId" });
+  const allowedIds = new Set(
+    categoriesForIncomeKind(categories, type === "income" ? incomeKind : undefined).map((c) => c.id),
+  );
+  // Wybrana kategoria zostaje widoczna zawsze (np. przy edycji starej operacji).
+  const visibleCategories = categories.filter(
+    (c) => allowedIds.has(c.id) || c.id === selectedCategoryId,
+  );
+
   const title = isEditing
     ? "Edytuj operację"
     : type === "income"
@@ -114,151 +130,160 @@ function TransactionFormBody({ transaction, defaultType, onClose }: BodyProps) {
         </DialogDescription>
       </DialogHeader>
 
-      <form onSubmit={submit} noValidate className="grid gap-4">
-        <Controller
-          control={control}
-          name="type"
-          render={({ field }) => (
-            <Segmented
-              label="Typ operacji"
-              value={field.value}
-              onChange={field.onChange}
-              options={TYPE_OPTIONS}
-            />
-          )}
-        />
-
-        {type === "income" && (
-          <Field label="Rodzaj przychodu" labelId={`${id}-kind`} error={errors.incomeKind?.message}>
-            <Controller
-              control={control}
-              name="incomeKind"
-              render={({ field }) => (
-                <Segmented
-                  label="Rodzaj przychodu"
-                  value={field.value ?? "bonus"}
-                  onChange={field.onChange}
-                  options={INCOME_KIND_OPTIONS}
-                />
-              )}
-            />
-          </Field>
-        )}
-
-        {canRepeat && (
-          <Field
-            label="Częstotliwość"
-            labelId={`${id}-recurring`}
-            error={errors.recurring?.message}
-            hint={
-              recurring
-                ? "Wynagrodzenie będzie księgowane automatycznie co miesiąc, w dniu z pola daty."
-                : undefined
-            }
-          >
-            <Controller
-              control={control}
-              name="recurring"
-              render={({ field }) => (
-                <Segmented
-                  label="Częstotliwość wpływu"
-                  value={field.value ? "monthly" : "once"}
-                  onChange={(value) => field.onChange(value === "monthly")}
-                  options={RECURRING_OPTIONS}
-                />
-              )}
-            />
-          </Field>
-        )}
-
-        <Field label="Kwota" htmlFor={`${id}-amount`} error={errors.amount?.message}>
-          <div className="relative">
-            <input
-              id={`${id}-amount`}
-              type="text"
-              inputMode="decimal"
-              autoComplete="off"
-              placeholder="0,00"
-              aria-invalid={errors.amount ? true : undefined}
-              className={cn(inputClass, "pr-9 text-right tabular-nums")}
-              {...register("amount")}
-            />
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm text-muted-foreground"
-            >
-              zł
-            </span>
-          </div>
-        </Field>
-
-        <Field label="Kategoria" labelId={`${id}-category`} error={errors.categoryId?.message}>
+      <form onSubmit={submit} noValidate className="flex min-h-0 flex-1 flex-col gap-4">
+        <DialogBody>
           <Controller
             control={control}
-            name="categoryId"
+            name="type"
             render={({ field }) => (
-              <div
-                role="radiogroup"
-                aria-labelledby={`${id}-category`}
-                className="flex flex-wrap gap-1.5"
-              >
-                {categories.map((category) => {
-                  const active = field.value === category.id;
-                  return (
-                    <button
-                      key={category.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={active}
-                      onClick={() => field.onChange(category.id)}
-                      className={cn(
-                        "inline-flex h-8 pointer-coarse:h-10 items-center gap-1.5 rounded-full border px-3 text-sm transition outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
-                        active ? "font-medium" : "text-muted-foreground hover:bg-muted",
-                      )}
-                      style={
-                        active
-                          ? { borderColor: category.color, backgroundColor: `${category.color}1f` }
-                          : undefined
-                      }
-                    >
-                      <CategoryIcon
-                        name={category.icon}
-                        className="size-3.5"
-                        style={{ color: category.color }}
-                      />
-                      {category.name}
-                    </button>
-                  );
-                })}
-              </div>
+              <Segmented
+                label="Typ operacji"
+                value={field.value}
+                onChange={field.onChange}
+                options={TYPE_OPTIONS}
+              />
             )}
           />
-        </Field>
 
-        <Field
-          label={recurring ? "Data pierwszego wpływu" : "Data"}
-          htmlFor={`${id}-date`}
-          error={errors.date?.message}
-        >
-          <input
-            id={`${id}-date`}
-            type="date"
-            aria-invalid={errors.date ? true : undefined}
-            className={inputClass}
-            {...register("date")}
-          />
-        </Field>
+          {type === "income" && (
+            <Field label="Rodzaj przychodu" labelId={`${id}-kind`} error={errors.incomeKind?.message}>
+              <Controller
+                control={control}
+                name="incomeKind"
+                render={({ field }) => (
+                  <Segmented
+                    label="Rodzaj przychodu"
+                    value={field.value ?? "bonus"}
+                    onChange={(kind) => {
+                      field.onChange(kind);
+                      // Zmiana rodzaju zdejmuje kategorię, która do nowego rodzaju nie pasuje.
+                      const selected = categories.find((c) => c.id === form.getValues("categoryId"));
+                      if (selected && !isCategoryAllowedForIncomeKind(selected, kind)) {
+                        form.setValue("categoryId", "");
+                      }
+                    }}
+                    options={INCOME_KIND_OPTIONS}
+                  />
+                )}
+              />
+            </Field>
+          )}
 
-        <Field label="Notatka (opcjonalnie)" htmlFor={`${id}-note`} error={errors.note?.message}>
-          <textarea
-            id={`${id}-note`}
-            rows={2}
-            maxLength={200}
-            aria-invalid={errors.note ? true : undefined}
-            className={cn(inputClass, "h-auto pointer-coarse:h-auto min-h-16 resize-none py-2")}
-            {...register("note")}
-          />
-        </Field>
+          {canRepeat && (
+            <Field
+              label="Częstotliwość"
+              labelId={`${id}-recurring`}
+              error={errors.recurring?.message}
+              hint={
+                recurring
+                  ? "Wynagrodzenie będzie księgowane automatycznie co miesiąc, w dniu z pola daty."
+                  : undefined
+              }
+            >
+              <Controller
+                control={control}
+                name="recurring"
+                render={({ field }) => (
+                  <Segmented
+                    label="Częstotliwość wpływu"
+                    value={field.value ? "monthly" : "once"}
+                    onChange={(value) => field.onChange(value === "monthly")}
+                    options={RECURRING_OPTIONS}
+                  />
+                )}
+              />
+            </Field>
+          )}
+
+          <Field label="Kwota" htmlFor={`${id}-amount`} error={errors.amount?.message}>
+            <div className="relative">
+              <input
+                id={`${id}-amount`}
+                type="text"
+                inputMode="decimal"
+                autoComplete="off"
+                placeholder="0,00"
+                aria-invalid={errors.amount ? true : undefined}
+                className={cn(inputClass, "pr-9 text-right tabular-nums")}
+                {...register("amount")}
+              />
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm text-muted-foreground"
+              >
+                zł
+              </span>
+            </div>
+          </Field>
+
+          <Field label="Kategoria" labelId={`${id}-category`} error={errors.categoryId?.message}>
+            <Controller
+              control={control}
+              name="categoryId"
+              render={({ field }) => (
+                <div
+                  role="group"
+                  aria-labelledby={`${id}-category`}
+                  className="flex flex-wrap gap-1.5"
+                >
+                  {visibleCategories.map((category) => {
+                    const active = field.value === category.id;
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        aria-pressed={active}
+                        // Drugie kliknięcie w wybraną kategorię zdejmuje wybór.
+                        onClick={() => field.onChange(active ? "" : category.id)}
+                        className={cn(
+                          "inline-flex h-8 pointer-coarse:h-10 items-center gap-1.5 rounded-full border px-3 text-sm transition outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                          active ? "font-medium" : "text-muted-foreground hover:bg-muted",
+                        )}
+                        style={
+                          active
+                            ? { borderColor: category.color, backgroundColor: `${category.color}1f` }
+                            : undefined
+                        }
+                      >
+                        <CategoryIcon
+                          name={category.icon}
+                          className="size-3.5"
+                          style={{ color: category.color }}
+                        />
+                        {category.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            />
+          </Field>
+
+          <Field
+            label={recurring ? "Data pierwszego wpływu" : "Data"}
+            htmlFor={`${id}-date`}
+            error={errors.date?.message}
+          >
+            <input
+              id={`${id}-date`}
+              type="date"
+              aria-invalid={errors.date ? true : undefined}
+              className={inputClass}
+              {...register("date")}
+            />
+          </Field>
+
+          <Field label="Notatka (opcjonalnie)" htmlFor={`${id}-note`} error={errors.note?.message}>
+            <textarea
+              id={`${id}-note`}
+              rows={2}
+              maxLength={200}
+              aria-invalid={errors.note ? true : undefined}
+              className={cn(inputClass, "h-auto pointer-coarse:h-auto min-h-16 resize-none py-2")}
+              {...register("note")}
+            />
+          </Field>
+        </DialogBody>
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>
