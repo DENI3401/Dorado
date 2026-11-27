@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { isSelectableCategory } from "@/features/categories/defaultCategories";
 import { useAllCategories } from "@/features/categories/hooks/useAllCategories";
 import { useRecurringIncomeStore } from "@/features/recurring-income/store";
 import { syncRecurringIncome } from "@/features/recurring-income/sync";
@@ -72,12 +73,20 @@ export function useTransactionForm({ transaction, defaultType = "expense", onSav
   // Cykliczność dotyczy tylko NOWEGO wynagrodzenia stałego (edycja pojedynczej operacji jej nie zmienia).
   const canRepeat = !transaction && type === "income" && incomeKind === "salary";
 
+  // Kategorie systemowe (np. „Subskrypcje”) nie są do ręcznego wyboru — chyba że edytujemy
+  // operację, która już ją ma (wtedy zostaje widoczna, żeby nie zgubić wyboru).
+  const originalCategoryId = transaction?.categoryId;
   const categoriesForType = useMemo(
-    () => categories.filter((c) => c.type === type),
-    [categories, type],
+    () =>
+      categories.filter(
+        (c) => c.type === type && (isSelectableCategory(c) || c.id === originalCategoryId),
+      ),
+    [categories, type, originalCategoryId],
   );
 
-  // Zmiana typu (przychód <-> wydatek): czyści niepasującą kategorię i rodzaj przychodu.
+  // Typ operacji jest stały dla danego formularza (wynika z przycisku „+ Wydatek” / „+ Przychód”
+  // albo z edytowanej operacji). Ten efekt tylko porządkuje stan startowy: zdejmuje niepasującą
+  // kategorię i uzupełnia rodzaj przychodu (np. dla starszych przychodów bez `incomeKind`).
   useEffect(() => {
     const { categoryId, incomeKind } = form.getValues();
     if (categoryId && !categoriesForType.some((c) => c.id === categoryId)) {

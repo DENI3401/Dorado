@@ -26,7 +26,6 @@ import {
   type Category,
 } from "@/features/categories";
 import {
-  TRANSACTION_TYPE_LABELS,
   countSubscriptionsInCategory,
   countTransactionsInCategory,
   deleteCategory,
@@ -40,9 +39,10 @@ interface CategoriesDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// Liczba mnoga wpisana wprost — doklejanie „y” do etykiety dawało „Wydateky” / „Przychódy”.
 const GROUPS: { type: TransactionType; title: string }[] = [
-  { type: "expense", title: `${TRANSACTION_TYPE_LABELS.expense}y` },
-  { type: "income", title: `${TRANSACTION_TYPE_LABELS.income}y` },
+  { type: "expense", title: "Wydatki" },
+  { type: "income", title: "Przychody" },
 ];
 
 export function CategoriesDialog({ open, onOpenChange }: CategoriesDialogProps) {
