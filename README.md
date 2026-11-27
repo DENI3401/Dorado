@@ -103,8 +103,8 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 | --- | --- | --- | --- | --- |
 | Denys Kononchuk (58843) | [@DENI3401](https://github.com/DENI3401) | Team Lead / React Architect | F0 Inicjalizacja i makieta bazowa, bazowy Toaster i dialogi Shadcn (F7), tunel do testów na telefonach (F17), przegląd i scalanie PR | F2 Cykl budżetowy, rollover i store ustawień, F3 Alert niskiego salda, F16 Testy Vitest |
 | Illia Isaiev (58835) | [@SKAYT950](https://github.com/SKAYT950) | UI/UX Lead | UI dla F4, F8, F10, F11; F5 Kalendarz płatności; F7 Toast, Undo i modale; synchronizacja płatności subskrypcji z transakcjami (F4); F17 Responsywność | F6 Ustawienia |
-| Mykola Safiiuk (56103) | [@sksooper](https://github.com/sksooper) | Module Lead: Logika danych (Transactions, Categories, Subscriptions) | F1 Warstwa danych i store; logika i schematy Zod dla F4, F8, F10, F11; konfiguracja Vitest; F9 Wynagrodzenie stałe | F14 Eksport i import JSON |
-| Roman Melnyk (56175) | [@Roman767409](https://github.com/Roman767409) | Module Lead: Analytics & Charts | — | F12 Dashboard i wykresy, F13 Safe-to-Spend, F15 Seed demo |
+| Mykola Safiiuk (56103) | [@sksooper](https://github.com/sksooper) | Module Lead: Logika danych (Transactions, Categories, Subscriptions) | F1 Warstwa danych i store; logika i schematy Zod dla F4, F8, F10, F11; konfiguracja Vitest; F9 Wynagrodzenie stałe | — |
+| Roman Melnyk (56175) | [@Roman767409](https://github.com/Roman767409) | Module Lead: Analytics & Charts | F14 Eksport i import JSON | F12 Dashboard i wykresy, F13 Safe-to-Spend, F15 Seed demo |
 
 ### Mapa funkcji
 
@@ -124,7 +124,7 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 | F11 | Historia transakcji (filtry, edycja) | Mykola (logika), Illia (UI) | Etap 2 | ✅ Zamknięte |
 | F12 | Dashboard i wykresy Recharts | Roman | Etap 4 | ✅ Otwarte |
 | F13 | Wskaźnik Safe-to-Spend | Roman | Etap 4 | ✅ Otwarte |
-| F14 | Eksport i import JSON | Mykola | Etap 4 | ⏳ Otwarte |
+| F14 | Eksport i import JSON | Roman | Etap 4 | ✅ Zamknięte |
 | F15 | Seed demo (dane testowe) | Roman | Etap 5 | ⏳ Otwarte |
 | F16 | Testy Vitest i edge cases | Denys | Etap 5 | ⏳ Otwarte |
 | F17 | Responsywność i testy na urządzeniach mobilnych | Illia, Denys | Etap 3 | ✅ Zamknięte |
