@@ -3,7 +3,6 @@ import { DEFAULT_CATEGORIES, FALLBACK_CATEGORY_ID } from "@/features/categories/
 import type { Category } from "@/features/categories/types";
 import type { Transaction } from "@/features/transactions/types";
 import { aggregateByCategory, aggregateByDay, transactionsInRange } from "./aggregate";
-import { getCycleBalance, getCycleRange } from "./cycle-fallback";
 
 let seq = 0;
 const tx = (over: Partial<Transaction> = {}): Transaction => ({
@@ -232,23 +231,5 @@ describe("aggregateByCategory — przychody", () => {
     expect(slices).toEqual([
       expect.objectContaining({ categoryId: FALLBACK_CATEGORY_ID.income, name: "Inne przychody", amount: 25, share: 1 }),
     ]);
-  });
-});
-
-describe("cycle-fallback (do czasu F2)", () => {
-  it("cykl to miesiąc kalendarzowy z dniem dzisiejszym", () => {
-    expect(getCycleRange("2026-11-17")).toEqual({ start: "2026-11-01", end: "2026-11-30" });
-    expect(getCycleRange("2028-02-01")).toEqual({ start: "2028-02-01", end: "2028-02-29" });
-    expect(getCycleRange("2026-12-31")).toEqual({ start: "2026-12-01", end: "2026-12-31" });
-  });
-
-  it("saldo = przychody − wydatki z cyklu, może być ujemne", () => {
-    const list = [
-      tx({ type: "income", incomeKind: "salary", amount: 100 }),
-      tx({ amount: 150.55 }),
-      tx({ date: "2026-10-31", type: "income", incomeKind: "bonus", amount: 1000 }),
-    ];
-    expect(getCycleBalance(list, NOV)).toBe(-50.55);
-    expect(getCycleBalance([], NOV)).toBe(0);
   });
 });

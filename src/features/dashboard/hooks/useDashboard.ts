@@ -1,32 +1,36 @@
 import { useMemo } from "react";
+import { getCycleBalance, getCycleRange } from "@/features/budget-cycle";
 import { useAllCategories } from "@/features/categories/hooks/useAllCategories";
+import { useSettingsStore } from "@/features/settings";
 import { useSubscriptionsStore } from "@/features/subscriptions/store";
 import { summarize } from "@/features/transactions/filters";
 import { useTransactionsStore } from "@/features/transactions/store";
 import { aggregateByCategory, aggregateByDay, transactionsInRange } from "../aggregate";
-// TODO(F2): zastąpić getCycleRange/getCycleBalance — jedyne miejsce użycia fallbacku.
-import { getCycleBalance, getCycleRange } from "../cycle-fallback";
 import { calculateSafeToSpend, getUpcomingPayments } from "../safeToSpend";
 
 /**
- * Wszystkie dane Dashboardu dla bieżącego cyklu. Przelicza się przy każdej zmianie
- * transakcji, subskrypcji, kategorii albo daty (nowy dzień = być może nowy cykl).
+ * Wszystkie dane Dashboardu dla bieżącego cyklu (dzień startu z ustawień). Przelicza się przy
+ * każdej zmianie transakcji, subskrypcji, kategorii, ustawień albo daty (nowy dzień = być może
+ * nowy cykl). `balance` uwzględnia rollover; `opening` to saldo otwarcia cyklu
+ * (np. do pokazania „zostało z poprzedniego cyklu”).
  */
 export function useDashboard(todayIso: string) {
   const transactions = useTransactionsStore((s) => s.transactions);
   const subscriptions = useSubscriptionsStore((s) => s.subscriptions);
   const categories = useAllCategories();
+  const cycleStartDay = useSettingsStore((s) => s.cycleStartDay);
 
   return useMemo(() => {
-    const cycle = getCycleRange(todayIso);
+    const cycle = getCycleRange(todayIso, cycleStartDay);
     const inCycle = transactionsInRange(transactions, cycle);
     const totals = summarize(inCycle);
-    const balance = getCycleBalance(transactions, cycle);
+    const { opening, balance } = getCycleBalance(transactions, cycle);
     const upcoming = getUpcomingPayments(subscriptions, transactions, todayIso, cycle.end);
 
     return {
       cycle,
       totals,
+      opening,
       balance,
       daily: aggregateByDay(inCycle, cycle),
       expensesByCategory: aggregateByCategory(inCycle, cycle, categories, "expense"),
@@ -40,5 +44,5 @@ export function useDashboard(todayIso: string) {
       }),
       isEmpty: inCycle.length === 0,
     };
-  }, [transactions, subscriptions, categories, todayIso]);
+  }, [transactions, subscriptions, categories, todayIso, cycleStartDay]);
 }
