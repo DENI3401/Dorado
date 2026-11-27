@@ -116,7 +116,7 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 | F3 | Alert niskiego salda (Trigger Once) | Denys | Etap 3 | ⏳ Otwarte |
 | F4 | Menedżer subskrypcji i automatyczne płatności | Mykola (logika), Illia (UI) | Etap 3 | ✅ Zamknięte |
 | F5 | Kalendarz płatności | Illia | Etap 3 | ✅ Zamknięte |
-| F6 | Ustawienia (próg alertu, dzień cyklu) | Illia | Etap 3 | ⏳ Otwarte |
+| F6 | Ustawienia (próg alertu, dzień cyklu) | Illia | Etap 3 | ✅ Zamknięte |
 | F7 | Toast, Undo i modale potwierdzenia | Illia, Denys | Etap 2 | ✅ Zamknięte |
 | F8 | Formularz transakcji: wydatki i przychody jednorazowe | Mykola (Zod), Illia (UI) | Etap 2 | ✅ Zamknięte |
 | F9 | Wynagrodzenie stałe (przychód cykliczny) | Mykola | Etap 3 | ✅ Zamknięte |
