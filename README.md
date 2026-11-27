@@ -112,8 +112,8 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 | --- | --- | --- | --- | --- |
 | F0 | Inicjalizacja projektu, motywy i makieta bazowa | Denys | Etap 1 | ✅ Zamknięte |
 | F1 | Warstwa danych: typy i store Zustand + persist | Mykola | Etap 2 | ✅ Zamknięte |
-| F2 | Cykl budżetowy, rollover i store ustawień | Denys | Etap 3 | ✅ Otwarte |
-| F3 | Alert niskiego salda (Trigger Once) | Denys | Etap 3 | ✅ Otwarte |
+| F2 | Cykl budżetowy, rollover i store ustawień | Denys | Etap 3 | ✅ Zamknięte |
+| F3 | Alert niskiego salda (Trigger Once) | Denys | Etap 3 | ✅ Zamknięte |
 | F4 | Menedżer subskrypcji i automatyczne płatności | Mykola (logika), Illia (UI) | Etap 3 | ✅ Zamknięte |
 | F5 | Kalendarz płatności | Illia | Etap 3 | ✅ Zamknięte |
 | F6 | Ustawienia (próg alertu, dzień cyklu) | Illia | Etap 3 | ✅ Zamknięte |
@@ -122,8 +122,8 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 | F9 | Wynagrodzenie stałe (przychód cykliczny) | Mykola | Etap 3 | ✅ Zamknięte |
 | F10 | Kategorie własne | Mykola (logika), Illia (UI) | Etap 2 | ✅ Zamknięte |
 | F11 | Historia transakcji (filtry, edycja) | Mykola (logika), Illia (UI) | Etap 2 | ✅ Zamknięte |
-| F12 | Dashboard i wykresy Recharts | Roman | Etap 4 | ✅ Otwarte |
-| F13 | Wskaźnik Safe-to-Spend | Roman | Etap 4 | ✅ Otwarte |
+| F12 | Dashboard i wykresy Recharts | Roman | Etap 4 | ✅ Zamknięte |
+| F13 | Wskaźnik Safe-to-Spend | Roman | Etap 4 | ✅ Zamknięte |
 | F14 | Eksport i import JSON | Roman | Etap 4 | ✅ Zamknięte |
 | F15 | Seed demo (dane testowe) | Roman | Etap 5 | ⏳ Otwarte |
 | F16 | Testy Vitest i edge cases | Denys | Etap 5 | ⏳ Otwarte |
@@ -133,8 +133,7 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 
 - Każda funkcja ma osobne Issue (Assignee, Milestone, etykieta `funkcja`) z opisem: Co robi użytkownik / Widok / Dane / Najtrudniejsze / Gotowe, gdy.
 - Jeśli nad funkcją pracują dwie osoby (np. logika i UI), obie są przypisane jako Assignees, a podział jest opisany w Issue.
-- Issue zamyka się automatycznie przez `Closes #<numer>` w opisie Pull Requesta.
-- Praca w gałęzi `feature/<nazwa>`, scalanie przez Pull Request do `test`, a `test` → `main` po ukończeniu etapu.
+- Praca w gałęzi `feature/<nazwa>`, scalanie przez Pull Request do `main` po ukończeniu etapu.
 - Team Lead przegląda Pull Requesty.
 
 ---
