@@ -112,8 +112,8 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 | --- | --- | --- | --- | --- |
 | F0 | Inicjalizacja projektu, motywy i makieta bazowa | Denys | Etap 1 | ✅ Zamknięte |
 | F1 | Warstwa danych: typy i store Zustand + persist | Mykola | Etap 2 | ✅ Zamknięte |
-| F2 | Cykl budżetowy, rollover i store ustawień | Denys | Etap 3 | ⏳ Otwarte |
-| F3 | Alert niskiego salda (Trigger Once) | Denys | Etap 3 | ⏳ Otwarte |
+| F2 | Cykl budżetowy, rollover i store ustawień | Denys | Etap 3 | ✅ Otwarte |
+| F3 | Alert niskiego salda (Trigger Once) | Denys | Etap 3 | ✅ Otwarte |
 | F4 | Menedżer subskrypcji i automatyczne płatności | Mykola (logika), Illia (UI) | Etap 3 | ✅ Zamknięte |
 | F5 | Kalendarz płatności | Illia | Etap 3 | ✅ Zamknięte |
 | F6 | Ustawienia (próg alertu, dzień cyklu) | Illia | Etap 3 | ✅ Zamknięte |
@@ -122,8 +122,8 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 | F9 | Wynagrodzenie stałe (przychód cykliczny) | Mykola | Etap 3 | ✅ Zamknięte |
 | F10 | Kategorie własne | Mykola (logika), Illia (UI) | Etap 2 | ✅ Zamknięte |
 | F11 | Historia transakcji (filtry, edycja) | Mykola (logika), Illia (UI) | Etap 2 | ✅ Zamknięte |
-| F12 | Dashboard i wykresy Recharts | Roman | Etap 4 | ⏳ Otwarte |
-| F13 | Wskaźnik Safe-to-Spend | Roman | Etap 4 | ⏳ Otwarte |
+| F12 | Dashboard i wykresy Recharts | Roman | Etap 4 | ✅ Otwarte |
+| F13 | Wskaźnik Safe-to-Spend | Roman | Etap 4 | ✅ Otwarte |
 | F14 | Eksport i import JSON | Mykola | Etap 4 | ⏳ Otwarte |
 | F15 | Seed demo (dane testowe) | Roman | Etap 5 | ⏳ Otwarte |
 | F16 | Testy Vitest i edge cases | Denys | Etap 5 | ⏳ Otwarte |
