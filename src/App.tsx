@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import AppLayout from "./components/AppLayout";
 import Calendar from "./pages/Calendar";
 import Dashboard from "./pages/Dashboard";
-import Placeholder from "./pages/Placeholder";
+import Settings from "./pages/Settings";
 import Subscriptions from "./pages/Subscriptions";
 import Transactions from "./pages/Transactions";
 
@@ -16,7 +16,7 @@ export default function App() {
           <Route path="/transactions" element={<Transactions />} />
           <Route path="/subscriptions" element={<Subscriptions />} />
           <Route path="/calendar" element={<Calendar />} />
-          <Route path="/settings" element={<Placeholder title="Ustawienia" />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
       <Toaster />
