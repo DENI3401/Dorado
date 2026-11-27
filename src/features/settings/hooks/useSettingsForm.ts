@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -49,6 +49,12 @@ export function useSettingsForm({ onSaved }: Options = {}) {
     resolver: zodResolver(settingsFormSchema),
     defaultValues: toFormInput({ cycleStartDay, lowBalanceThreshold }),
   });
+
+  // Ustawienia mogą się zmienić poza formularzem (import kopii zapasowej F14, Undo) — wtedy pola
+  // pokazują nowe wartości. Po zwykłym zapisie wartości są już te same, więc reset nic nie psuje.
+  useEffect(() => {
+    form.reset(toFormInput({ cycleStartDay, lowBalanceThreshold }));
+  }, [form, cycleStartDay, lowBalanceThreshold]);
 
   // Zmiana dnia cyklu wymaga potwierdzenia. `pending` zostaje po zamknięciu okna (treść nie miga
   // w trakcie animacji), a o tym, czy okno jest otwarte, decyduje `confirmOpen`.
