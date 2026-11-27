@@ -153,9 +153,6 @@ export function BudgetSettingsForm() {
           </LivePreview>
         </SettingsSection>
 
-        {/* F14: tu dojdzie sekcja „Kopia zapasowa” (eksport / import JSON) — kolejny <SettingsSection>
-            na stronie Settings.tsx, poza tym formularzem (nie zawiera pól ustawień budżetu). */}
-
         <div className="flex flex-wrap items-center justify-end gap-2">
           {isDirty && (
             <Button type="button" variant="ghost" size="lg" onClick={discard}>

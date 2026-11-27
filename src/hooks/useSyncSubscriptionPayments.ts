@@ -1,32 +1,14 @@
 import { useEffect } from "react";
 import { useSubscriptionsStore } from "@/features/subscriptions";
 import { todayIso, useTransactionsStore } from "@/features/transactions";
-import { planSubscriptionPayments, type SyncedThrough } from "@/lib/planSubscriptionPayments";
-
-const STORAGE_KEY = "dorado-subscription-sync";
-
-function readSynced(): SyncedThrough {
-  try {
-    const parsed: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
-    return parsed && typeof parsed === "object" ? (parsed as SyncedThrough) : {};
-  } catch {
-    return {};
-  }
-}
-
-function writeSynced(value: SyncedThrough) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
-  } catch {
-    // brak zapisu (tryb prywatny) — w najgorszym razie płatności policzą się ponownie po odświeżeniu
-  }
-}
+import { planSubscriptionPayments } from "@/lib/planSubscriptionPayments";
+import { readSyncedThrough, writeSyncedThrough } from "@/lib/subscriptionSyncStorage";
 
 /** Dopisuje do historii transakcji wydatki z subskrypcji, których termin już minął (lub jest dziś). */
 export function syncSubscriptionPayments(): void {
   const { subscriptions } = useSubscriptionsStore.getState();
   const { transactions } = useTransactionsStore.getState();
-  const before = readSynced();
+  const before = readSyncedThrough();
 
   const plan = planSubscriptionPayments(subscriptions, transactions, before, todayIso());
 
@@ -36,7 +18,7 @@ export function syncSubscriptionPayments(): void {
     }));
   }
   if (JSON.stringify(plan.syncedThrough) !== JSON.stringify(before)) {
-    writeSynced(plan.syncedThrough);
+    writeSyncedThrough(plan.syncedThrough);
   }
 }
 
