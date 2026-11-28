@@ -1,6 +1,7 @@
-import { useId } from "react";
+import { useId, useState } from "react";
 import { Controller } from "react-hook-form";
 import { toast } from "sonner";
+import { CategoryFormDialog } from "@/components/categories/CategoryFormDialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,6 +21,7 @@ import {
   type Subscription,
 } from "@/features/subscriptions";
 import { cn } from "@/lib/utils";
+import { SubscriptionCategoryPicker } from "./SubscriptionCategoryPicker";
 
 interface SubscriptionFormDialogProps {
   open: boolean;
@@ -54,7 +56,7 @@ interface BodyProps {
 }
 
 function SubscriptionFormBody({ subscription, onClose }: BodyProps) {
-  const { form, submit, isEditing } = useSubscriptionForm({
+  const { form, submit, isEditing, categories, selectCategory } = useSubscriptionForm({
     subscription,
     onSaved: (event) => {
       toast.success(savedSubscriptionMessage(event));
@@ -67,6 +69,7 @@ function SubscriptionFormBody({ subscription, onClose }: BodyProps) {
     formState: { errors, isSubmitting },
   } = form;
   const id = useId();
+  const [creatingCategory, setCreatingCategory] = useState(false);
 
   return (
     <>
@@ -112,6 +115,27 @@ function SubscriptionFormBody({ subscription, onClose }: BodyProps) {
                 zł
               </span>
             </div>
+          </Field>
+
+          <Field
+            label="Kategoria"
+            labelId={`${id}-category`}
+            error={errors.categoryId?.message}
+            hint="Płatności tej subskrypcji trafią do Transakcji w tej kategorii."
+          >
+            <Controller
+              control={control}
+              name="categoryId"
+              render={({ field }) => (
+                <SubscriptionCategoryPicker
+                  categories={categories}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onCreate={() => setCreatingCategory(true)}
+                  labelId={`${id}-category`}
+                />
+              )}
+            />
           </Field>
 
           <Field label="Okres płatności" labelId={`${id}-period`} error={errors.period?.message}>
@@ -185,6 +209,17 @@ function SubscriptionFormBody({ subscription, onClose }: BodyProps) {
           </Button>
         </DialogFooter>
       </form>
+
+      {/*
+        Okno zagnieżdżone, poza <form> subskrypcji: w drzewie Reacta zdarzenia przechodzą przez portale,
+        więc zatwierdzenie formularza kategorii wewnątrz <form> wysłałoby też formularz subskrypcji.
+      */}
+      <CategoryFormDialog
+        open={creatingCategory}
+        onOpenChange={setCreatingCategory}
+        forSubscriptions
+        onSaved={(event) => selectCategory(event.category.id)}
+      />
     </>
   );
 }

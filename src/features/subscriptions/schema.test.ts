@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_CATEGORIES } from "@/features/categories/defaultCategories";
+import type { Category } from "@/features/categories/types";
 import { makeSubscriptionFormSchema } from "./schema";
 
 const schema = makeSubscriptionFormSchema(DEFAULT_CATEGORIES);
@@ -61,5 +62,55 @@ describe("makeSubscriptionFormSchema", () => {
 
   it("odrzuca zbyt długą notatkę", () => {
     expect(schema.safeParse({ ...valid, note: "x".repeat(201) }).success).toBe(false);
+  });
+});
+
+describe("makeSubscriptionFormSchema — kategoria", () => {
+  const insurance: Category = {
+    id: "c-insurance",
+    name: "Ubezpieczenia",
+    type: "expense",
+    icon: "ShieldCheck",
+    color: "#22c55e",
+    isDefault: false,
+    forSubscriptions: true,
+  };
+  const categoryMessages = (input: Record<string, unknown>, categories: readonly Category[] = DEFAULT_CATEGORIES) =>
+    makeSubscriptionFormSchema(categories)
+      .safeParse(input)
+      .error?.issues.filter((i) => i.path[0] === "categoryId")
+      .map((i) => i.message);
+
+  it("przyjmuje domyślne kategorie płatności cyklicznych", () => {
+    for (const categoryId of ["cat-expense-bills", "cat-expense-housing", "cat-expense-transport", "cat-expense-health", "cat-expense-other"]) {
+      expect(schema.safeParse({ ...valid, categoryId }).success).toBe(true);
+    }
+  });
+
+  it("przyjmuje własną kategorię subskrypcji, gdy jest na liście kategorii", () => {
+    const withCustom = makeSubscriptionFormSchema([...DEFAULT_CATEGORIES, insurance]);
+    const r = withCustom.safeParse({ ...valid, categoryId: insurance.id });
+    expect(r.data?.categoryId).toBe("c-insurance");
+  });
+
+  it("kategoria utworzona z formularza: przyjmuje ją dopiero schemat zbudowany z nową listą", () => {
+    // Dlatego useSubscriptionForm buduje schemat od nowa przy każdej zmianie listy kategorii.
+    expect(categoryMessages({ ...valid, categoryId: insurance.id })).toEqual([
+      "Wybrana kategoria nie istnieje",
+    ]);
+    expect(categoryMessages({ ...valid, categoryId: insurance.id }, [...DEFAULT_CATEGORIES, insurance])).toBeUndefined();
+  });
+
+  it("schemat nie zawęża wyboru do listy z formularza — każda kategoria wydatków jest poprawna", () => {
+    // Np. subskrypcja z kopii zapasowej w kategorii „Jedzenie” da się edytować bez zmiany kategorii.
+    expect(schema.safeParse({ ...valid, categoryId: "cat-expense-food" }).success).toBe(true);
+  });
+
+  it("komunikaty błędów pola „Kategoria”", () => {
+    expect(categoryMessages({ ...valid, categoryId: "" })).toContain("Wybierz kategorię");
+    expect(categoryMessages({ ...valid, categoryId: "nope" })).toEqual(["Wybrana kategoria nie istnieje"]);
+    expect(categoryMessages({ ...valid, categoryId: "cat-income-bonus" })).toEqual([
+      "Subskrypcja wymaga kategorii wydatków",
+    ]);
   });
 });

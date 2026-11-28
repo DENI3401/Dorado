@@ -83,6 +83,37 @@ describe("useSubscriptionsStore", () => {
   });
 });
 
+describe("kategoria subskrypcji w magazynie", () => {
+  it("nowa subskrypcja trafia na początek listy z wybraną kategorią", () => {
+    const { addSubscription } = useSubscriptionsStore.getState();
+    const first = addSubscription(values());
+    const second = addSubscription(values({ name: "OC samochodu", categoryId: "c-insurance" }));
+    expect(second.categoryId).toBe("c-insurance");
+    expect(useSubscriptionsStore.getState().subscriptions.map((s) => s.id)).toEqual([second.id, first.id]);
+  });
+
+  it("edycja zmienia kategorię", () => {
+    const { addSubscription, updateSubscription } = useSubscriptionsStore.getState();
+    const s = addSubscription(values());
+    expect(updateSubscription(s.id, values({ categoryId: "cat-expense-bills" }))?.categoryId).toBe(
+      "cat-expense-bills",
+    );
+  });
+
+  it("reassignCategory przepina tylko subskrypcje z danej kategorii i zwraca ich liczbę", () => {
+    const { addSubscription, reassignCategory } = useSubscriptionsStore.getState();
+    const a = addSubscription(values({ categoryId: "c-old" }));
+    const b = addSubscription(values({ categoryId: "c-old" }));
+    const c = addSubscription(values({ categoryId: "cat-expense-bills" }));
+    expect(reassignCategory("c-old", "cat-expense-other")).toBe(2);
+    const byId = new Map(useSubscriptionsStore.getState().subscriptions.map((s) => [s.id, s.categoryId]));
+    expect(byId.get(a.id)).toBe("cat-expense-other");
+    expect(byId.get(b.id)).toBe("cat-expense-other");
+    expect(byId.get(c.id)).toBe("cat-expense-bills");
+    expect(reassignCategory("c-old", "cat-expense-other")).toBe(0);
+  });
+});
+
 describe("deleteCategory a subskrypcje", () => {
   it("przepina subskrypcje usuwanej kategorii na „Inne wydatki”", () => {
     const cat = useCategoriesStore.getState().addCategory({
@@ -93,5 +124,22 @@ describe("deleteCategory a subskrypcje", () => {
     expect(r.ok && r.reassignedSubscriptions).toBe(1);
     const after = useSubscriptionsStore.getState().subscriptions.find((x) => x.id === s.id);
     expect(after?.categoryId).toBe(FALLBACK_CATEGORY_ID.expense);
+  });
+
+  it("usunięcie własnej kategorii subskrypcji: subskrypcje i ich płatności idą do „Inne wydatki”", () => {
+    const cat = useCategoriesStore.getState().addCategory({
+      name: "Ubezpieczenia", type: "expense", icon: "ShieldCheck", color: "#22c55e", forSubscriptions: true,
+    });
+    const s = useSubscriptionsStore.getState().addSubscription(values({ categoryId: cat.id }));
+    useTransactionsStore.getState().addTransaction({
+      type: "expense", amount: 49.99, categoryId: cat.id, date: "2026-03-15", note: "OC",
+    });
+    const r = deleteCategory(cat.id);
+    expect(r.ok && [r.reassigned, r.reassignedSubscriptions]).toEqual([1, 1]);
+    expect(useSubscriptionsStore.getState().subscriptions.find((x) => x.id === s.id)?.categoryId).toBe(
+      FALLBACK_CATEGORY_ID.expense,
+    );
+    expect(useTransactionsStore.getState().transactions[0].categoryId).toBe(FALLBACK_CATEGORY_ID.expense);
+    expect(useCategoriesStore.getState().customCategories).toEqual([]);
   });
 });

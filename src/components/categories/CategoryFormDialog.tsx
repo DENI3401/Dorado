@@ -19,6 +19,7 @@ import {
   savedCategoryMessage,
   useCategoryForm,
   type Category,
+  type CategorySavedEvent,
 } from "@/features/categories";
 import { TRANSACTION_TYPE_LABELS } from "@/features/transactions";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,13 @@ interface CategoryFormDialogProps {
   onOpenChange: (open: boolean) => void;
   /** Przekaż, aby edytować własną kategorię. */
   category?: Category;
+  /**
+   * Nowa kategoria z formularza subskrypcji: zawsze wydatek (bez wyboru typu)
+   * i od razu dostępna w subskrypcjach.
+   */
+  forSubscriptions?: boolean;
+  /** Po zapisie (Toast i zamknięcie okna są już obsłużone), np. żeby zaznaczyć nową kategorię. */
+  onSaved?: (event: CategorySavedEvent) => void;
 }
 
 const TYPE_OPTIONS = [
@@ -37,22 +45,42 @@ const TYPE_OPTIONS = [
   { value: "income", label: TRANSACTION_TYPE_LABELS.income },
 ] as const;
 
-export function CategoryFormDialog({ open, onOpenChange, category }: CategoryFormDialogProps) {
+export function CategoryFormDialog({
+  open,
+  onOpenChange,
+  category,
+  forSubscriptions,
+  onSaved,
+}: CategoryFormDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
-        <CategoryFormBody category={category} onClose={() => onOpenChange(false)} />
+        <CategoryFormBody
+          category={category}
+          forSubscriptions={forSubscriptions}
+          onSaved={onSaved}
+          onClose={() => onOpenChange(false)}
+        />
       </DialogContent>
     </Dialog>
   );
 }
 
-function CategoryFormBody({ category, onClose }: { category?: Category; onClose: () => void }) {
-  const { form, submit, isEditing, typeLocked } = useCategoryForm({
+interface BodyProps {
+  category?: Category;
+  forSubscriptions?: boolean;
+  onSaved?: (event: CategorySavedEvent) => void;
+  onClose: () => void;
+}
+
+function CategoryFormBody({ category, forSubscriptions: subscriptionMode, onSaved, onClose }: BodyProps) {
+  const { form, submit, isEditing, typeLocked, forSubscriptions } = useCategoryForm({
     category,
+    forSubscriptions: subscriptionMode,
     onSaved: (event) => {
       toast.success(savedCategoryMessage(event));
       onClose();
+      onSaved?.(event);
     },
   });
   const {
@@ -63,17 +91,21 @@ function CategoryFormBody({ category, onClose }: { category?: Category; onClose:
   } = form;
   const id = useId();
 
-  const [name, icon, color] = watch(["name", "icon", "color"]);
+  const [name, type, icon, color] = watch(["name", "type", "icon", "color"]);
   const isCustomColor = !(CATEGORY_COLORS as readonly string[]).includes(color);
 
   return (
     <>
       <DialogHeader>
-        <DialogTitle>{isEditing ? "Edytuj kategorię" : "Nowa kategoria"}</DialogTitle>
+        <DialogTitle>
+          {isEditing ? "Edytuj kategorię" : forSubscriptions ? "Nowa kategoria subskrypcji" : "Nowa kategoria"}
+        </DialogTitle>
         <DialogDescription>
-          {typeLocked
-            ? "Typ istniejącej kategorii jest zablokowany, bo używają go już operacje."
-            : "Wybierz nazwę, typ, ikonę i kolor."}
+          {forSubscriptions
+            ? "Kategoria wydatków na stałe opłaty, np. ubezpieczenia czy abonament medyczny. Znajdziesz ją też w Transakcjach."
+            : typeLocked
+              ? "Typ istniejącej kategorii jest zablokowany, bo używają go już operacje."
+              : "Wybierz nazwę, typ, ikonę i kolor."}
         </DialogDescription>
       </DialogHeader>
 
@@ -96,21 +128,46 @@ function CategoryFormBody({ category, onClose }: { category?: Category; onClose:
             />
           </Field>
 
-          <Field label="Typ" labelId={`${id}-type`} error={errors.type?.message}>
-            <Controller
-              control={control}
-              name="type"
-              render={({ field }) => (
-                <Segmented
-                  label="Typ kategorii"
-                  value={field.value}
-                  onChange={field.onChange}
-                  options={TYPE_OPTIONS}
-                  disabled={typeLocked}
-                />
-              )}
-            />
-          </Field>
+          {/* Z formularza subskrypcji powstaje zawsze kategoria wydatków — wybór typu nie jest potrzebny. */}
+          {!forSubscriptions && (
+            <Field label="Typ" labelId={`${id}-type`} error={errors.type?.message}>
+              <Controller
+                control={control}
+                name="type"
+                render={({ field }) => (
+                  <Segmented
+                    label="Typ kategorii"
+                    value={field.value}
+                    onChange={field.onChange}
+                    options={TYPE_OPTIONS}
+                    disabled={typeLocked}
+                  />
+                )}
+              />
+            </Field>
+          )}
+
+          {!forSubscriptions && type === "expense" && (
+            // Cała ramka jest klikalna; nazwą pola jest sam tytuł, a opis to podpowiedź.
+            <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border p-3">
+              <input
+                type="checkbox"
+                aria-labelledby={`${id}-subscriptions`}
+                aria-describedby={`${id}-subscriptions-hint`}
+                className="mt-0.5 size-4 shrink-0 cursor-pointer accent-indigo-600"
+                {...register("forSubscriptions")}
+              />
+              <span className="grid gap-0.5">
+                <span id={`${id}-subscriptions`} className="text-sm font-medium">
+                  Dostępna w subskrypcjach
+                </span>
+                <span id={`${id}-subscriptions-hint`} className="text-xs text-muted-foreground">
+                  Pokaż ją na liście kategorii w formularzu subskrypcji — dla stałych opłat, np.
+                  ubezpieczeń czy abonamentów.
+                </span>
+              </span>
+            </label>
+          )}
 
           <Field label="Ikona" labelId={`${id}-icon`} error={errors.icon?.message}>
             <Controller

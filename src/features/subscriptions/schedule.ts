@@ -180,6 +180,46 @@ export function sortSubscriptions(
   return keyed.map((k) => k.s);
 }
 
+export interface SubscriptionsSummary {
+  /** Wszystkie, w kolejności listy (sortSubscriptions). */
+  subscriptions: Subscription[];
+  active: Subscription[];
+  paused: Subscription[];
+  ended: Subscription[];
+  /** Najbliższa płatność każdej subskrypcji (dzisiejsza też się liczy); null: wstrzymana lub zakończona. */
+  nextPaymentById: Record<string, string | null>;
+  /** Sumy liczone tylko z aktywnych (wstrzymane i zakończone nie kosztują). */
+  monthlyTotal: number;
+  yearlyTotal: number;
+  isEmpty: boolean;
+}
+
+/** Dane zakładki Subskrypcje: sekcje Aktywne / Zakończone / Wstrzymane, sumy i najbliższe płatności. */
+export function summarizeSubscriptions(
+  all: readonly Subscription[],
+  todayIso: string,
+): SubscriptionsSummary {
+  const subscriptions = sortSubscriptions(all, todayIso);
+  const byStatus = (status: SubscriptionStatus) =>
+    subscriptions.filter((s) => getSubscriptionStatus(s, todayIso) === status);
+  const active = byStatus("active");
+
+  const yesterday = addDaysIso(todayIso, -1);
+  const nextPaymentById: Record<string, string | null> = {};
+  for (const s of subscriptions) nextPaymentById[s.id] = nextOccurrence(s, yesterday);
+
+  return {
+    subscriptions,
+    active,
+    paused: byStatus("paused"),
+    ended: byStatus("ended"),
+    nextPaymentById,
+    monthlyTotal: sumMonthlyCost(active),
+    yearlyTotal: sumYearlyCost(active),
+    isEmpty: all.length === 0,
+  };
+}
+
 /** Czy transakcja dla tej subskrypcji i daty już istnieje (reguła idempotentności). */
 export function isPaymentRecorded(
   transactions: readonly Transaction[],

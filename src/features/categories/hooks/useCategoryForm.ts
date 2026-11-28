@@ -18,6 +18,11 @@ export type CategorySavedEvent =
 interface Options {
   /** Przekaż, aby edytować istniejącą własną kategorię. */
   category?: Category;
+  /**
+   * Nowa kategoria z formularza subskrypcji: zawsze wydatek (typ zablokowany)
+   * i od razu dostępna w subskrypcjach.
+   */
+  forSubscriptions?: boolean;
   /** Wywoływane po zapisie — tu UI pokazuje Toast i zamyka modal. */
   onSaved?: (event: CategorySavedEvent) => void;
 }
@@ -27,21 +32,34 @@ const emptyDefaults: CategoryFormInput = {
   type: "expense",
   icon: "Ellipsis",
   color: CATEGORY_COLORS[5],
+  forSubscriptions: false,
 };
 
+function fromCategory(category: Category): CategoryFormInput {
+  return {
+    name: category.name,
+    type: category.type,
+    icon: category.icon as CategoryFormInput["icon"],
+    color: category.color,
+    forSubscriptions: category.forSubscriptions === true,
+  };
+}
+
 /** Bezgłowa logika formularza kategorii (bez żadnego JSX). */
-export function useCategoryForm({ category, onSaved }: Options = {}) {
+export function useCategoryForm({ category, forSubscriptions = false, onSaved }: Options = {}) {
   const all = useAllCategories();
   const addCategory = useCategoriesStore((s) => s.addCategory);
   const updateCategory = useCategoriesStore((s) => s.updateCategory);
 
   const schema = useMemo(() => makeCategoryFormSchema(all, category), [all, category]);
 
+  const startValues: CategoryFormInput = forSubscriptions
+    ? { ...emptyDefaults, type: "expense", forSubscriptions: true }
+    : emptyDefaults;
+
   const form = useForm<CategoryFormInput, unknown, CategoryFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: category
-      ? { name: category.name, type: category.type, icon: category.icon as CategoryFormInput["icon"], color: category.color }
-      : emptyDefaults,
+    defaultValues: category ? fromCategory(category) : startValues,
   });
 
   const submit = form.handleSubmit((values) => {
@@ -50,16 +68,18 @@ export function useCategoryForm({ category, onSaved }: Options = {}) {
       if (updated) onSaved?.({ action: "updated", category: updated });
       return;
     }
-    const created = addCategory(values);
+    const created = addCategory(forSubscriptions ? { ...values, forSubscriptions: true } : values);
     onSaved?.({ action: "created", category: created });
-    form.reset({ ...emptyDefaults, type: values.type });
+    form.reset({ ...startValues, type: values.type });
   });
 
   return {
     form,
     submit,
     isEditing: Boolean(category),
-    /** true przy edycji — pole "typ" powinno być wyłączone (disabled). */
-    typeLocked: Boolean(category),
+    /** true przy edycji i w formularzu subskrypcji — pole "typ" powinno być wyłączone lub ukryte. */
+    typeLocked: Boolean(category) || forSubscriptions,
+    /** Kategoria powstaje z formularza subskrypcji (typ i flaga ustalone z góry). */
+    forSubscriptions: !category && forSubscriptions,
   };
 }

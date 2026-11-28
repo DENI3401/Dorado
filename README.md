@@ -39,6 +39,7 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 ### 3.3. Menedżer subskrypcji i opłat stałych
 
 - **Ewidencja płatności cyklicznych:** Rejestracja usług (Netflix, Spotify, czynsz) z automatycznym generowaniem wydatków w bilansie oraz kalendarzem płatności.
+- **Kategorie subskrypcji:** W formularzu subskrypcji wybór kategorii stałych opłat (Subskrypcje, Transport, Mieszkanie, Rachunki, Zdrowie, Inne wydatki — bez jednorazowych zakupów, np. jedzenia) oraz tworzenie własnej kategorii (np. „Ubezpieczenia”) bez wychodzenia z formularza. Własną kategorię z Transakcji można udostępnić subskrypcjom opcją „Dostępna w subskrypcjach”. Płatności trafiają do Transakcji w kategorii subskrypcji.
 
 ### 3.4. System powiadomień i inteligentnych alertów (Notification Center)
 
@@ -83,7 +84,7 @@ Projekt jest realizowany w ramach przedmiotu "Programowanie Front-end".
 | **Zarządzanie stanem**          | **Zustand (+ Persist)**      | Lekki magazyn stanu z synchronizacją z `localStorage`.                 |
 | **Walidacja formularzy**        | **Zod + React Hook Form**    | Bezpieczna walidacja schematów danych.                                 |
 | **Wykresy i Daty**              | **Recharts / date-fns**      | Wykresy analityczne oraz obsługa cykli budżetowych.                    |
-| **Testowanie logiki**           | **Vitest**                   | Testy jednostkowe dla logiki budżetowej i warunków powiadomień.        |
+| **Testowanie**                  | **Vitest + Testing Library** | Testy jednostkowe logiki budżetowej i powiadomień oraz testy komponentów w jsdom (np. zakładka Subskrypcje). |
 
 ---
 

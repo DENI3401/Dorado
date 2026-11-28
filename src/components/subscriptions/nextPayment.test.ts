@@ -22,4 +22,13 @@ describe("describeRelativeDay", () => {
     expect(describeRelativeDay("2026-11-12", "2026-11-11")).toBe("jutro");
     expect(describeRelativeDay("2026-11-21", "2026-11-11")).toBe("za 10 dni");
   });
+
+  it("„za 2 dni” przez granicę miesiąca (czynsz 30.11 widziany 28.11)", () => {
+    expect(describeRelativeDay("2026-11-30", "2026-11-28")).toBe("za 2 dni");
+    expect(describeRelativeDay("2026-12-01", "2026-11-28")).toBe("za 3 dni");
+  });
+
+  it("data z przeszłości (np. karta otwarta przez noc) nie daje ujemnej liczby dni", () => {
+    expect(describeRelativeDay("2026-11-10", "2026-11-11")).toBe("dzisiaj");
+  });
 });

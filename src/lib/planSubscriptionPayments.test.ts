@@ -107,6 +107,32 @@ describe("planSubscriptionPayments", () => {
     expect(dates).toContain("2027-02-28");
   });
 
+  it("płatność trafia do Transakcji w kategorii subskrypcji (np. własnej „Ubezpieczenia”)", () => {
+    const plan = planSubscriptionPayments(
+      [sub({ id: "oc", name: "OC samochodu", amount: 1240, period: "yearly", categoryId: "c-insurance", startDate: "2026-11-28" })],
+      [],
+      {},
+      "2026-11-28",
+    );
+    expect(plan.created).toHaveLength(1);
+    expect(plan.created[0]).toMatchObject({
+      categoryId: "c-insurance",
+      amount: 1240,
+      note: "OC samochodu",
+      date: "2026-11-28",
+      subscriptionId: "oc",
+    });
+  });
+
+  it("zmiana kategorii subskrypcji dotyczy tylko kolejnych płatności", () => {
+    const first = planSubscriptionPayments([sub()], [], {}, "2026-10-20");
+    expect(first.created.map((t) => t.categoryId)).toEqual(["cat-subscriptions", "cat-subscriptions"]);
+
+    const recategorized = sub({ categoryId: "cat-expense-bills" });
+    const later = planSubscriptionPayments([recategorized], first.created, first.syncedThrough, "2026-11-20");
+    expect(later.created.map((t) => [t.date, t.categoryId])).toEqual([["2026-11-15", "cat-expense-bills"]]);
+  });
+
   it("respektuje endDate", () => {
     const plan = planSubscriptionPayments([sub({ endDate: "2026-10-15" })], [], {}, "2026-12-31");
     expect(plan.created.map((t) => t.date)).toEqual(["2026-09-15", "2026-10-15"]);

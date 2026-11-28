@@ -57,6 +57,8 @@ export const backupCategorySchema = z.object({
   isDefault: z
     .boolean()
     .refine((v) => v === false, "Kopia może zawierać tylko kategorie własne"),
+  // Opcjonalne: starsze kopie nie mają tego pola (= kategoria nie jest kategorią subskrypcji).
+  forSubscriptions: z.boolean("Nieprawidłowa flaga kategorii subskrypcji").optional(),
 });
 
 export const backupSubscriptionSchema = z.object({
@@ -163,6 +165,13 @@ function checkConsistency(data: BackupDataBase, ctx: Ctx) {
       });
     }
     names.add(key);
+    if (c.type === "income" && c.forSubscriptions === true) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["customCategories", index, "forSubscriptions"],
+        message: "Kategoria przychodów nie może być kategorią subskrypcji",
+      });
+    }
   });
 
   const categories = new Map<string, Category>(
