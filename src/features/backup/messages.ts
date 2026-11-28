@@ -90,6 +90,7 @@ const FIELD_LABELS: Record<string, string> = {
   icon: "ikona",
   color: "kolor",
   isDefault: "kategoria domyślna",
+  forSubscriptions: "kategoria subskrypcji",
   period: "okres",
   startDate: "data rozpoczęcia",
   endDate: "data zakończenia",

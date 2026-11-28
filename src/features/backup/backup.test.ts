@@ -174,6 +174,35 @@ describe("eksport i import (F14)", () => {
     if (parsed.success) expect(summarizeBackup(parsed.backup).transactions).toBe(0);
   });
 
+  it("zachowuje kategorię subskrypcji (flaga) i subskrypcję w tej kategorii", () => {
+    const data = sampleData();
+    data.customCategories.push({
+      id: "custom-insurance",
+      name: "Ubezpieczenia",
+      type: "expense",
+      icon: "ShieldCheck",
+      color: "#22c55e",
+      isDefault: false,
+      forSubscriptions: true,
+    });
+    data.subscriptions[0] = { ...data.subscriptions[0], categoryId: "custom-insurance" };
+    restoreBackup(data);
+
+    const parsed = parseBackup(serializeBackup(createBackup()));
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    resetStores();
+    restoreBackup(parsed.backup.data);
+
+    expect(useCategoriesStore.getState().customCategories[1]).toMatchObject({
+      name: "Ubezpieczenia",
+      forSubscriptions: true,
+    });
+    expect(useSubscriptionsStore.getState().subscriptions[0].categoryId).toBe("custom-insurance");
+    // Starsza kategoria bez flagi nie dostaje jej przy imporcie.
+    expect("forSubscriptions" in useCategoriesStore.getState().customCategories[0]).toBe(false);
+  });
+
   it("Undo: przywrócenie kopii sprzed importu wraca do poprzedniego stanu", () => {
     restoreBackup(sampleData());
     const previous: BackupFile = createBackup();
@@ -305,6 +334,27 @@ describe("parseBackup — odrzucanie błędnych plików", () => {
         "Kategorie własne, pozycja 2, pole „nazwa”: Kategoria o takiej nazwie już istnieje",
       );
     }
+  });
+
+  it("odrzuca kategorię przychodów oznaczoną jako kategoria subskrypcji i zły typ flagi", () => {
+    const data = sampleData();
+    data.customCategories.push({
+      id: "custom-tutoring",
+      name: "Korepetycje",
+      type: "income",
+      icon: "BookOpen",
+      color: "#6366f1",
+      isDefault: false,
+      forSubscriptions: true,
+    });
+    const result = parseBackup(fileWith(data));
+    expect(result.success ? "" : result.error).toBe(
+      "Kategorie własne, pozycja 2, pole „kategoria subskrypcji”: Kategoria przychodów nie może być kategorią subskrypcji",
+    );
+
+    const wrongType = sampleData();
+    const raw = { ...wrongType.customCategories[0], forSubscriptions: "tak" };
+    expect(parseBackup(fileWith({ ...wrongType, customCategories: [raw] })).success).toBe(false);
   });
 
   it("odrzuca subskrypcję kończącą się przed startem", () => {
