@@ -50,6 +50,17 @@ export const FALLBACK_CATEGORY_ID = {
 
 export const SUBSCRIPTIONS_CATEGORY_ID = "cat-expense-subscriptions";
 
+/**
+ * Kategorie systemowe: widoczne w filtrach, na liście kategorii i na wykresach,
+ * ale nie do wyboru w formularzu nowej operacji. „Subskrypcje” nadaje wyłącznie
+ * zakładka Subskrypcje (płatności trafiają do Transakcji automatycznie).
+ */
+export const SYSTEM_CATEGORY_IDS: ReadonlySet<string> = new Set([SUBSCRIPTIONS_CATEGORY_ID]);
+
+/** Czy kategorię można wybrać ręcznie w formularzu przychodu / wydatku. */
+export const isSelectableCategory = (category: Pick<Category, "id">): boolean =>
+  !SYSTEM_CATEGORY_IDS.has(category.id);
+
 export const DEFAULT_CATEGORIES: readonly Category[] = [
   { id: "cat-expense-food", name: "Jedzenie", type: "expense", icon: "Utensils", color: "#f97316", isDefault: true },
   { id: "cat-expense-transport", name: "Transport", type: "expense", icon: "Car", color: "#3b82f6", isDefault: true },

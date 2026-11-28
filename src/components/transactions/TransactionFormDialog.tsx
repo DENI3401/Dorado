@@ -20,7 +20,6 @@ import {
 } from "./incomeKindCategories";
 import {
   INCOME_KIND_LABELS,
-  TRANSACTION_TYPE_LABELS,
   savedTransactionMessage,
   useTransactionForm,
   type IncomeKind,
@@ -36,19 +35,6 @@ interface TransactionFormDialogProps {
   transaction?: Transaction;
   defaultType?: TransactionType;
 }
-
-const TYPE_OPTIONS = [
-  {
-    value: "expense",
-    label: TRANSACTION_TYPE_LABELS.expense,
-    activeClassName: "text-rose-600 dark:text-rose-400",
-  },
-  {
-    value: "income",
-    label: TRANSACTION_TYPE_LABELS.income,
-    activeClassName: "text-emerald-600 dark:text-emerald-400",
-  },
-] as const;
 
 const RECURRING_OPTIONS = [
   { value: "once", label: "Jednorazowo" },
@@ -103,7 +89,9 @@ function TransactionFormBody({ transaction, defaultType, onClose }: BodyProps) {
   const id = useId();
 
   // Kategorie przychodu zależą od rodzaju: stałe wynagrodzenie → Wynagrodzenie, premia → Premia i Inne przychody.
-  const incomeKind = useWatch({ control, name: "incomeKind" });
+  // Brak rodzaju traktujemy jak „premię” — tak samo, jak pokazuje go przełącznik poniżej,
+  // żeby lista kategorii nigdy nie rozjechała się z zaznaczonym rodzajem.
+  const incomeKind = useWatch({ control, name: "incomeKind" }) ?? "bonus";
   const selectedCategoryId = useWatch({ control, name: "categoryId" });
   const allowedIds = new Set(
     categoriesForIncomeKind(categories, type === "income" ? incomeKind : undefined).map((c) => c.id),
@@ -113,8 +101,12 @@ function TransactionFormBody({ transaction, defaultType, onClose }: BodyProps) {
     (c) => allowedIds.has(c.id) || c.id === selectedCategoryId,
   );
 
+  // Typ operacji jest stały: „+ Wydatek” otwiera tylko wydatek, „+ Przychód” tylko przychód,
+  // a edycja zachowuje typ operacji. Bez przełącznika typu nie zostają „stare” kategorie.
   const title = isEditing
-    ? "Edytuj operację"
+    ? type === "income"
+      ? "Edytuj przychód"
+      : "Edytuj wydatek"
     : type === "income"
       ? "Nowy przychód"
       : "Nowy wydatek";
@@ -132,19 +124,6 @@ function TransactionFormBody({ transaction, defaultType, onClose }: BodyProps) {
 
       <form onSubmit={submit} noValidate className="flex min-h-0 flex-1 flex-col gap-4">
         <DialogBody>
-          <Controller
-            control={control}
-            name="type"
-            render={({ field }) => (
-              <Segmented
-                label="Typ operacji"
-                value={field.value}
-                onChange={field.onChange}
-                options={TYPE_OPTIONS}
-              />
-            )}
-          />
-
           {type === "income" && (
             <Field label="Rodzaj przychodu" labelId={`${id}-kind`} error={errors.incomeKind?.message}>
               <Controller
