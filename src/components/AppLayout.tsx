@@ -19,6 +19,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { useLowBalanceAlert } from "@/hooks/useLowBalanceAlert";
 import { useSyncRecurringIncome } from "@/hooks/useSyncRecurringIncome";
 import { useSyncSubscriptionPayments } from "@/hooks/useSyncSubscriptionPayments";
 
@@ -59,6 +60,9 @@ export default function AppLayout() {
   useSyncSubscriptionPayments();
   // Księguje wynagrodzenia cykliczne (F9), których termin już nadszedł.
   useSyncRecurringIncome();
+  // Alert niskiego salda (F3) na każdej podstronie. Musi iść po obu hookach wyżej, żeby automatyczne
+  // księgowania trafiły do salda przed sprawdzeniem.
+  useLowBalanceAlert();
 
   const { resolvedTheme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
