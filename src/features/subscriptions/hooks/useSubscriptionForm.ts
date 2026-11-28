@@ -1,9 +1,10 @@
-import { useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useCallback, useMemo } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SUBSCRIPTIONS_CATEGORY_ID } from "@/features/categories/defaultCategories";
 import { useAllCategories } from "@/features/categories/hooks/useAllCategories";
 import { todayIso } from "@/features/transactions/utils/isoDate";
+import { categoryIdsInUse, subscriptionCategoryOptions } from "../categories";
+import { subscriptionFormDefaults, subscriptionToFormInput } from "../formValues";
 import {
   makeSubscriptionFormSchema,
   type SubscriptionFormInput,
@@ -23,46 +24,42 @@ interface Options {
   onSaved?: (event: SubscriptionSavedEvent) => void;
 }
 
-function emptyDefaults(): SubscriptionFormInput {
-  return {
-    name: "",
-    amount: "",
-    categoryId: SUBSCRIPTIONS_CATEGORY_ID,
-    period: "monthly",
-    startDate: todayIso(),
-    endDate: "",
-    note: "",
-  };
-}
-
-function fromSubscription(s: Subscription): SubscriptionFormInput {
-  return {
-    name: s.name,
-    amount: String(s.amount),
-    categoryId: s.categoryId,
-    period: s.period,
-    startDate: s.startDate,
-    endDate: s.endDate ?? "",
-    note: s.note,
-  };
-}
-
 /** Bezgłowa logika formularza subskrypcji (bez żadnego JSX). */
 export function useSubscriptionForm({ subscription, onSaved }: Options = {}) {
   const allCategories = useAllCategories();
+  const subscriptions = useSubscriptionsStore((s) => s.subscriptions);
   const addSubscription = useSubscriptionsStore((s) => s.addSubscription);
   const updateSubscription = useSubscriptionsStore((s) => s.updateSubscription);
 
+  // Schemat zna wszystkie kategorie — także dodaną przed chwilą z poziomu tego formularza.
   const schema = useMemo(() => makeSubscriptionFormSchema(allCategories), [allCategories]);
-  const categories = useMemo(
-    () => allCategories.filter((c) => c.type === "expense"),
-    [allCategories],
-  );
 
   const form = useForm<SubscriptionFormInput, unknown, SubscriptionFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: subscription ? fromSubscription(subscription) : emptyDefaults(),
+    defaultValues: subscription
+      ? subscriptionToFormInput(subscription)
+      : subscriptionFormDefaults(todayIso()),
   });
+
+  const selectedCategoryId = useWatch({ control: form.control, name: "categoryId" });
+  const usedCategoryIds = useMemo(() => categoryIdsInUse(subscriptions), [subscriptions]);
+  const categories = useMemo(
+    () =>
+      subscriptionCategoryOptions(allCategories, {
+        usedIds: usedCategoryIds,
+        selectedId: selectedCategoryId,
+      }),
+    [allCategories, usedCategoryIds, selectedCategoryId],
+  );
+
+  /** Zaznacza kategorię (np. właśnie utworzoną w oknie „Nowa kategoria”) i czyści błąd pola. */
+  const selectCategory = useCallback(
+    (categoryId: string) => {
+      form.setValue("categoryId", categoryId, { shouldDirty: true });
+      form.clearErrors("categoryId");
+    },
+    [form],
+  );
 
   const submit = form.handleSubmit((values) => {
     if (subscription) {
@@ -72,14 +69,15 @@ export function useSubscriptionForm({ subscription, onSaved }: Options = {}) {
     }
     const created = addSubscription(values);
     onSaved?.({ action: "created", subscription: created });
-    form.reset(emptyDefaults());
+    form.reset(subscriptionFormDefaults(todayIso()));
   });
 
   return {
     form,
     submit,
     isEditing: Boolean(subscription),
-    /** Tylko kategorie wydatków — do pola select. */
+    /** Kategorie płatności cyklicznych (+ używane przez subskrypcje i wybrana) — do wyboru w polu „Kategoria”. */
     categories,
+    selectCategory,
   };
 }
