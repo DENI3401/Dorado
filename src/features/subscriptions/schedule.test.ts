@@ -11,6 +11,7 @@ import {
   sortSubscriptions,
   sumMonthlyCost,
   sumYearlyCost,
+  summarizeSubscriptions,
   yearlyCost,
 } from "./schedule";
 import type { ScheduleRule, Subscription } from "./types";
@@ -184,6 +185,69 @@ describe("status i sortowanie", () => {
       "ended",
       "paused",
     ]);
+  });
+});
+
+describe("summarizeSubscriptions (dane zakładki Subskrypcje)", () => {
+  const today = "2026-11-28";
+  const list = [
+    sub({ id: "rent", name: "Czynsz", amount: 1900, startDate: "2026-08-31" }),
+    sub({ id: "insurance", name: "Ubezpieczenie", amount: 389, period: "yearly", startDate: "2025-12-20" }),
+    sub({ id: "today", name: "Auto", amount: 200, startDate: "2026-11-28" }),
+    sub({ id: "ended", name: "Max", amount: 29.99, startDate: "2026-08-14", endDate: "2026-10-20" }),
+    sub({ id: "paused", name: "Disney+", amount: 37.99, startDate: "2026-08-08", isActive: false }),
+  ];
+
+  it("dzieli na aktywne, zakończone i wstrzymane; aktywne wg najbliższej płatności", () => {
+    const s = summarizeSubscriptions(list, today);
+    expect(s.active.map((x) => x.id)).toEqual(["today", "rent", "insurance"]);
+    expect(s.ended.map((x) => x.id)).toEqual(["ended"]);
+    expect(s.paused.map((x) => x.id)).toEqual(["paused"]);
+    expect(s.subscriptions.map((x) => x.id)).toEqual(["today", "rent", "insurance", "ended", "paused"]);
+    expect(s.isEmpty).toBe(false);
+  });
+
+  it("sumy obejmują tylko aktywne (roczna / 12 w sumie miesięcznej, miesięczne × 12 w rocznej)", () => {
+    const s = summarizeSubscriptions(list, today);
+    expect(s.monthlyTotal).toBe(2132.42); // 1900 + 200 + 389 / 12
+    expect(s.yearlyTotal).toBe(25589); // (1900 + 200) × 12 + 389
+  });
+
+  it("najbliższa płatność: dzisiejsza się liczy, krótszy miesiąc → ostatni dzień; null dla zakończonej i wstrzymanej", () => {
+    const { nextPaymentById } = summarizeSubscriptions(list, today);
+    expect(nextPaymentById).toEqual({
+      today: "2026-11-28",
+      rent: "2026-11-30",
+      insurance: "2026-12-20",
+      ended: null,
+      paused: null,
+    });
+  });
+
+  it("subskrypcja kończąca się dziś jest jeszcze aktywna", () => {
+    const s = summarizeSubscriptions([sub({ id: "last", startDate: "2026-01-28", endDate: today })], today);
+    expect(s.active.map((x) => x.id)).toEqual(["last"]);
+    expect(s.nextPaymentById.last).toBe(today);
+  });
+
+  it("pusta lista: stan pusty i zerowe sumy", () => {
+    expect(summarizeSubscriptions([], today)).toEqual({
+      subscriptions: [],
+      active: [],
+      paused: [],
+      ended: [],
+      nextPaymentById: {},
+      monthlyTotal: 0,
+      yearlyTotal: 0,
+      isEmpty: true,
+    });
+  });
+
+  it("same wstrzymane: lista nie jest pusta, ale sumy są zerowe", () => {
+    const s = summarizeSubscriptions([sub({ isActive: false })], today);
+    expect(s.isEmpty).toBe(false);
+    expect(s.active).toEqual([]);
+    expect(s.monthlyTotal).toBe(0);
   });
 });
 
