@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { StatStrip } from "@/components/ui/stat-strip";
 import { CashflowChart } from "@/components/dashboard/CashflowChart";
 import { CategoryBreakdownChart } from "@/components/dashboard/CategoryBreakdownChart";
+import { DemoDataBanner } from "@/components/demo/DemoDataBanner";
 import { SafeToSpendCard } from "@/components/dashboard/SafeToSpendCard";
 import { formatDate } from "@/components/transactions/format";
 import { EmptyState } from "@/components/transactions/TransactionsEmptyState";
@@ -32,6 +33,8 @@ export default function Dashboard() {
         <h2 className="text-2xl font-semibold">Dashboard</h2>
         <p className="text-sm text-muted-foreground">Bieżący cykl: {cycleLabel}</p>
       </div>
+
+      <DemoDataBanner />
 
       <StatStrip
         label={`Podsumowanie cyklu ${cycleLabel}`}

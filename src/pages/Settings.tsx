@@ -1,5 +1,6 @@
 import { BackupSection } from "@/components/settings/BackupSection";
 import { BudgetSettingsForm } from "@/components/settings/BudgetSettingsForm";
+import { DemoDataSection } from "@/components/settings/DemoDataSection";
 import { SETTINGS_TITLES } from "@/features/settings";
 
 export default function Settings() {
@@ -10,6 +11,8 @@ export default function Settings() {
       <BudgetSettingsForm />
 
       <BackupSection />
+
+      <DemoDataSection />
     </div>
   );
 }
