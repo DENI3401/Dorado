@@ -19,6 +19,8 @@ export const categoryFormBase = z.object({
   type: z.enum(["income", "expense"], "Wybierz typ kategorii"),
   icon: z.enum(CATEGORY_ICONS, "Wybierz ikonę"),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Wybierz poprawny kolor"),
+  /** Widoczna w formularzu subskrypcji. Kategorii przychodów magazyn tej flagi nie zapisze. */
+  forSubscriptions: z.boolean().default(false),
 });
 
 export type CategoryFormInput = z.input<typeof categoryFormBase>;

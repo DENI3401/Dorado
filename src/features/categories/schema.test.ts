@@ -28,6 +28,20 @@ describe("makeCategoryFormSchema", () => {
     expect(schema.safeParse({ ...base, icon: "Nope" }).success).toBe(false);
   });
 
+  it("flaga kategorii subskrypcji: domyślnie false, można ją włączyć", () => {
+    const schema = makeCategoryFormSchema(DEFAULT_CATEGORIES);
+    expect(schema.safeParse(base).data?.forSubscriptions).toBe(false);
+    expect(schema.safeParse({ ...base, forSubscriptions: true }).data?.forSubscriptions).toBe(true);
+    expect(schema.safeParse({ ...base, forSubscriptions: "tak" }).success).toBe(false);
+  });
+
+  it("kategoria subskrypcji nie może dublować nazwy istniejącej kategorii wydatków", () => {
+    const schema = makeCategoryFormSchema(DEFAULT_CATEGORIES);
+    const r = schema.safeParse({ ...base, name: "rachunki", forSubscriptions: true });
+    expect(r.success).toBe(false);
+    expect(r.error?.issues[0].message).toBe("Kategoria o takiej nazwie już istnieje");
+  });
+
   it("przy edycji nie koliduje sama ze sobą, ale blokuje zmianę typu", () => {
     const mine: Category = { id: "x", name: "Siłownia", type: "expense", icon: "Dumbbell", color: "#22c55e", isDefault: false };
     const schema = makeCategoryFormSchema([...DEFAULT_CATEGORIES, mine], mine);
