@@ -1,7 +1,9 @@
 import {
   BookOpen,
+  Bus,
   Car,
   Clapperboard,
+  Cloud,
   Coffee,
   Dumbbell,
   Ellipsis,
@@ -17,11 +19,15 @@ import {
   Plane,
   Receipt,
   Repeat,
+  ShieldCheck,
   Shirt,
   ShoppingBag,
   Smartphone,
+  Tv,
   Utensils,
   Wallet,
+  Wifi,
+  Zap,
   type LucideIcon,
 } from "lucide-react";
 import type { CategoryIcon } from "@/features/categories";
@@ -51,6 +57,12 @@ export const CATEGORY_ICON_MAP: Record<CategoryIcon, LucideIcon> = {
   Shirt,
   BookOpen,
   Music,
+  ShieldCheck,
+  Wifi,
+  Zap,
+  Tv,
+  Cloud,
+  Bus,
 };
 
 /** Bezpieczne pobranie ikony — nieznana nazwa daje „Ellipsis”. */
